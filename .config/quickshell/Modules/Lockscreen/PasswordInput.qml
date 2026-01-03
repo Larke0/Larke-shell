@@ -10,7 +10,7 @@ Item {
 
     FontLoader {
         id: meganbats
-        source: "../fonts/Meganbats-rr9x.ttf"
+        source: "../../fonts/Meganbats-rr9x.ttf"
         
         onStatusChanged: {
             if (meganbats.status === FontLoader.Error)
@@ -20,7 +20,7 @@ Item {
 
     FontLoader {
         id: myhappyending
-        source: "../fonts/MyHappyEndingRegular-Lx7G.ttf"
+        source: "../../fonts/MyHappyEndingRegular-Lx7G.ttf"
         
         onStatusChanged: {
             if (myhappyending.status === FontLoader.Error)
@@ -60,7 +60,7 @@ Item {
         anchors.fill: parent
         color: Theme.background
         radius: 60
-        border.color: root.context.showFailure ? "#f38ba8" : "#0db9d7"
+        border.color: root.context.showFailure ? "#f38ba8" : Theme.accent
         border.width: 2
 
         // Shake Animation on Error
