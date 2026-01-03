@@ -10,8 +10,6 @@ Item {
 
     FontLoader {
         id: meganbats
-        // "../" means "go up to the parent folder" (quickshell)
-        // then go into "fonts"
         source: "../fonts/Meganbats-rr9x.ttf"
         
         onStatusChanged: {
@@ -22,8 +20,6 @@ Item {
 
     FontLoader {
         id: myhappyending
-        // "../" means "go up to the parent folder" (quickshell)
-        // then go into "fonts"
         source: "../fonts/MyHappyEndingRegular-Lx7G.ttf"
         
         onStatusChanged: {
@@ -36,13 +32,13 @@ Item {
     property string text: ""
     property bool unlockInProgress: false
 
-    // 1. The Model: Stores the dots
+    // The Model: Stores the dots
     ListModel { 
         id: dotsModel 
     }
 
     onTextChanged: {
-        // Define all the characters that produce good shapes in your font
+        // Define all the characters that produce good shapes in the font
         var validChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
         // If typing: Pick a random char from validChars
@@ -78,7 +74,7 @@ Item {
             NumberAnimation { target: inputBg; property: "x"; from: -10; to: 0; duration: 50 }
         }
 
-        // 3. The View: Displays the dots
+        // The View: Displays the dots
         ListView {
             id: dotList
             anchors.fill: parent
@@ -112,7 +108,7 @@ Item {
                 }
             }
 
-            // 4. The Transitions (Controlled Animations)
+            // The Transitions (Controlled Animations)
             
             // Animation for NEW dots only (Spin In)
             add: Transition {

@@ -10,12 +10,12 @@ Scope {
     property bool unlockInProgress: false
     property bool showFailure: false
 
-    onCurrentTextChanged: showFailure = false // Reset error when typing [cite: 67]
+    onCurrentTextChanged: showFailure = false
 
     function tryUnlock() {
         if (currentText === "") return;
         root.unlockInProgress = true;
-        pam.start(); // Begin PAM authentication [cite: 68]
+        pam.start(); // Begin PAM authentication
     }
 
     PamContext {
@@ -25,16 +25,16 @@ Scope {
 
         onPamMessage: {
             if (this.responseRequired) {
-                this.respond(root.currentText); // Send the typed password to PAM [cite: 70]
+                this.respond(root.currentText); // Send the typed password to PAM
             }
         }
 
         onCompleted: result => {
             if (result == PamResult.Success) {
-                root.unlocked(); // Trigger success signal [cite: 71]
+                root.unlocked(); // Trigger success signal
             } else {
                 root.currentText = "";
-                root.showFailure = true; // Show error message [cite: 71]
+                root.showFailure = true; // Show error message
             }
             root.unlockInProgress = false;
         }

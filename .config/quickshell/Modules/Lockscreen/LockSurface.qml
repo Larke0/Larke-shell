@@ -36,12 +36,11 @@ Rectangle {
         anchors.fill: parent
         source: root.wallpaperPath ? "file://" + root.wallpaperPath : ""
         
-        // Optimization settings
         fillMode: Image.PreserveAspectCrop
-        asynchronous: false // Load immediately to prevent the black frame
+        asynchronous: false // Load immediately
         cache: true         // Keep in memory for faster subsequent locks
         
-        // Matches the image to your screen resolution for faster decoding
+        // Matches the image to the screen resolution for faster decoding
         sourceSize.width: parent.width
         sourceSize.height: parent.height
     
@@ -55,12 +54,12 @@ Rectangle {
     ClockWidget {
 	     id: mainClock
 	     anchors.centerIn: parent
-	     anchors.verticalCenterOffset: 200 // Push it up a bit so it's not blocked by the password input
+	     anchors.verticalCenterOffset: 200
 	}
     
     Component.onCompleted: root.forceActiveFocus()
 
-    // Handle all typing here now
+    // Handle all typing here
     Keys.onPressed: function(event) {
         if (root.context.unlockInProgress) return;
 
@@ -76,17 +75,16 @@ Rectangle {
     ColumnLayout {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: 50 // Optional: adds some breathing room from the edge
+        anchors.bottomMargin: 50
         spacing: 20
 
  		Text {
 		    visible: root.context.showFailure
 		    text: "Incorrect password"
 		    color: "#f38ba8"
-		    // Use Layout.alignment if needed to center the error text
 		    Layout.alignment: Qt.AlignHCenter 
 		}
-        // Use your new custom component
+        // Use the custom component
         PasswordInput {
             text: root.context.currentText
             unlockInProgress: root.context.unlockInProgress

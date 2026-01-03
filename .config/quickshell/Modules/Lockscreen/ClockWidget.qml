@@ -9,7 +9,6 @@ Item {
 
     
 
-    // Re-load the font here to keep the component self-contained
     FontLoader {
         id: clockFont
         source: "../fonts/MyHappyEndingRegular-Lx7G.ttf"
@@ -35,8 +34,8 @@ Item {
             id: backgroundBox
             
             // Dynamic Size: Content size + Padding
-            width: layout.implicitWidth + 80  // 40px padding on left/right
-            height: layout.implicitHeight + 40 // 20px padding on top/bottom
+            width: layout.implicitWidth + 80
+            height: layout.implicitHeight + 40
             
             anchors.centerIn: parent
     
@@ -48,8 +47,7 @@ Item {
 	    ColumnLayout {
 	        id: layout
 	        anchors.centerIn: parent
-	        spacing: -15 // Tighten the gap between time and date
-
+	        spacing: -15
 	        Text {
 	            id: timeLabel
 	            text: "00:00"
@@ -63,7 +61,7 @@ Item {
 	            font.pixelSize: 150
 	            font.bold: false
 	            
-	            // Center text if the font is monospaced (rare for cartoons, but good practice)
+	            // Center text if the font is monospaced
 	            Layout.alignment: Qt.AlignHCenter
 	        }
 
