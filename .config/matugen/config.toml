@@ -1,0 +1,7 @@
+[config]
+reload_apps = true
+set_wallpaper = false
+
+[templates.quickshell]
+input_path = '/home/larke/.config/quickshell/theme/Theme.qml.template'
+output_path = '/home/larke/.config/quickshell/theme/Theme.qml'
