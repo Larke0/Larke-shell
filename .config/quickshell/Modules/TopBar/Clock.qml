@@ -17,7 +17,7 @@ RowLayout {
 
     // --- VISUALS ---
     
-    // 1. The Time (Bold and Big)
+    // The Time
     Text {
         // "hh:mm" = 24h format (e.g., 14:30)
         // "h:mm AP" = 12h format (e.g., 2:30 PM)
@@ -31,7 +31,7 @@ RowLayout {
         }
     }
 
-    // 2. The Date (Optional - Smaller and softer color)
+    // 2. The Date
     Text {
         // "MMM dd" = Short Month + Day (e.g., Dec 30)
         text: Qt.formatDateTime(parent.currentDate, "MMM dd")

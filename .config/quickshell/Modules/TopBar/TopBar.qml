@@ -65,7 +65,7 @@ PanelWindow {
                 y: root.height 
             }
             
-            // Left curve going "up" into the bar
+            // Left curve going up into the bar
             PathArc { 
                 x: (root.width / 2) - (notchWidth / 2)
                 y: root.height - notchHeight
@@ -79,7 +79,7 @@ PanelWindow {
                 y: root.height - notchHeight 
             }
             
-            // Right curve going back "down" to the bottom edge
+            // Right curve going back down to the bottom edge
             PathArc { 
                 x: (root.width / 2) + (notchWidth / 2) + notchRadius
                 y: root.height
@@ -113,7 +113,7 @@ PanelWindow {
     WorkspaceSelector {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
-        anchors.topMargin: (45 / 2) - (height / 2) -8 // Centers within the 45px area
+        anchors.topMargin: (45 / 2) - (height / 2) -8 // Centers
         wsOffset: root.wsOffset
         kanjiMap: root.kanjiMap
         z: 10

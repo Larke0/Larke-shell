@@ -29,7 +29,6 @@ PanelWindow {
     visible: revealed || backgroundSurface.y > -(backgroundSurface.height - 1)
     mask: backgroundSurface
 
-    // UPDATED FUNCTION: Added 'force' parameter
     function removeNotification(notificationObject, force = false) {
          var index = -1;
          for (var i = 0; i < notificationModel.count; i++) {
@@ -107,7 +106,7 @@ PanelWindow {
                             NumberAnimation { duration: 300; easing.type: Easing.OutQuart }
                         }
 
-                        // NEW: Helper to trigger the local shrink then the model removal
+                        // Helper to trigger the local shrink then the model removal
                         function startDismissal() {
                             if (notificationModel.count > 1) {
                                 delegateItem.implicitHeight = 0;

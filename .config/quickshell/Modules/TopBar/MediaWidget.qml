@@ -14,10 +14,10 @@ RowLayout {
     property bool isPlaying: false
     property bool hasPlayer: false
     
-    // NEW: We store the actual player object here so we can control it later
+    // We store the actual player object here so we can control it later
     property var activePlayerObject: null
     
-    // MEMORY: Remembers the name of the last app
+    // Remembers the name of the last app
     property string lastActiveIdentity: ""
 
     // --- LOGIC: The Smart Selector ---
@@ -70,9 +70,6 @@ RowLayout {
     // --- VISUALS ---
     visible: hasPlayer
 
-    // Wrap the text items in an Item or just apply MouseArea to the whole RowLayout
-    // Since RowLayout itself doesn't always have a background to click, 
-    // we often put the MouseArea inside it filling the parent.
     
     MouseArea {
         anchors.fill: parent

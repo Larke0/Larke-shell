@@ -48,7 +48,6 @@ PanelWindow {
 
     Process {
          id: wpctl
-         // No need for /bin/bash here, we can call wpctl directly
          command: ["wpctl", "get-volume", "@DEFAULT_AUDIO_SINK@"]
  
          stdout: StdioCollector {
@@ -126,14 +125,13 @@ PanelWindow {
                }
            }
 
-           // Visual Styling (Your existing rectangle code)
+           // Visual Styling
            color: Theme.background
            radius: 10
            border.color: Theme.accent
            border.width: 0
 
-           // (Optional) This "filler" rectangle squared off the top corners
-           // It is now strictly visual since the window doesn't move.
+
            Rectangle {
                id: topfill
                anchors.top: parent.top
@@ -144,7 +142,6 @@ PanelWindow {
                radius: 0
            }
 
-           // Your RowLayout content
            RowLayout {
                anchors.fill: parent
                anchors.margins: 6
