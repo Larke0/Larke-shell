@@ -1,0 +1,2 @@
+# theme/qmldir
+singleton Theme Theme.qml
