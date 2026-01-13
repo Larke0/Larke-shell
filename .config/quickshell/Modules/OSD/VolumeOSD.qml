@@ -128,7 +128,7 @@ PanelWindow {
            // Visual Styling
            color: Theme.background
            radius: 10
-           border.color: Theme.accent
+           border.color: "transparent"
            border.width: 0
 
 

@@ -106,7 +106,7 @@ RowLayout {
         color: mediaRoot.isPlaying ? Theme.accent_down : Theme.empty
         font { family: "JetBrainsMono Nerd Font"; pixelSize: 14; bold: true }
         elide: Text.ElideRight
-        Layout.maximumWidth: 300
+        Layout.maximumWidth: 150
     }
 
     // 3. Artist
@@ -116,6 +116,6 @@ RowLayout {
         font { family: "JetBrainsMono Nerd Font"; pixelSize: 14 }
         visible: text.length > 2
         elide: Text.ElideRight
-        Layout.maximumWidth: 300 
+        Layout.maximumWidth: 110 
     }
 }

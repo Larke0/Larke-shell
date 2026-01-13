@@ -1,7 +1,31 @@
 [config]
 reload_apps = true
 set_wallpaper = false
+scheme_type = "scheme-expressive"
 
 [templates.quickshell]
-input_path = '/home/larke/.config/quickshell/theme/Theme.qml.template'
-output_path = '/home/larke/.config/quickshell/theme/Theme.qml'
+input_path = '~/.config/quickshell/theme/Theme.qml.template'
+output_path = '~/.config/quickshell/theme/Theme.qml'
+
+
+[templates.gtk3]
+input_path = '~/.config/matugen/templates/catppuccin-override.css'
+output_path = '~/.config/gtk-3.0/gtk.css'
+
+[templates.gtk4]
+input_path = '~/.config/matugen/templates/catppuccin-override.css'
+output_path = '~/.config/gtk-4.0/gtk.css'
+
+[templates.rasi]
+input_path = '~/.config/matugen/templates/rounded-nord-dark-larke.rasi'
+output_path = '~/.local/share/rofi/themes/rounded-nord-dark-larke.rasi'
+
+
+[templates.hyprland]
+input_path = '~/.config/matugen/templates/hyprland-theme.conf'
+output_path = '~/.config/hypr/hyprland/theme.conf'
+
+
+[templates.hyprlock]
+input_path = '~/.config/matugen/templates/hyprlock-theme.conf'
+output_path = '~/.config/hypr/hyprlock.conf'

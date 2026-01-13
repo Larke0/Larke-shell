@@ -22,7 +22,11 @@ PanelWindow {
     Connections {
         target: notificationModel
         function onCountChanged() {
-            if (notificationModel.count > 0) popupWindow.revealed = true
+            if (notificationModel.count > 0) {
+                popupWindow.revealed = true;
+            } else if (notificationModel.count === 0) {
+                popupWindow.revealed = false;
+            }
         }
     }
     
@@ -103,7 +107,7 @@ PanelWindow {
                         implicitHeight: 60 
 
                         Behavior on implicitHeight {
-                            NumberAnimation { duration: 300; easing.type: Easing.OutQuart }
+                            NumberAnimation { duration: 300; easing.type: Easing.OutCubic }
                         }
 
                         // Helper to trigger the local shrink then the model removal
@@ -167,12 +171,14 @@ PanelWindow {
                                         font.bold: true 
                                         Layout.fillWidth: true
                                         elide: Text.ElideRight
+                                        font.pixelSize: 12
                                     }
                                     Text { 
                                         text: model.notif.body 
                                         color: Theme.text
                                         elide: Text.ElideRight 
                                         Layout.fillWidth: true
+                                        font.pixelSize: 12
                                     }
                                 }
                             }

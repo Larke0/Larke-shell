@@ -15,11 +15,6 @@
     "app_class": "OxygenNotIncluded"
   },
   {
-    "initial_class": "steam_app_2357570",
-    "initial_title": "Overwatch",
-    "app_class": "steam_app_2357570"
-  },
-  {
     "initial_class": "steam_app_1374490",
     "initial_title": "Runescape: Dragonwilds  ",
     "app_class": "steam_app_1374490"
@@ -28,11 +23,6 @@
     "initial_class": "XIVLauncher.Core",
     "initial_title": "XIVLauncher 1.2.1 (43ed53b)",
     "app_class": "XIVLauncher.Core"
-  },
-  {
-    "initial_class": "steam_app_1091500",
-    "initial_title": "REDlauncher",
-    "app_class": "steam_app_1091500"
   },
   {
     "initial_class": "Minecraft* 1.20.1",
@@ -65,8 +55,48 @@
     "app_class": "ffxiv_dx11.exe"
   },
   {
+    "initial_class": "gamescope",
+    "initial_title": "XIVLauncher-RB 1.2.1.7 (36a9b4f)",
+    "app_class": "gamescope"
+  },
+  {
+    "initial_class": "steam_app_3513350",
+    "initial_title": "Wuthering Waves  ",
+    "app_class": "steam_app_3513350"
+  },
+  {
+    "initial_class": "Minecraft* 1.21.11",
+    "initial_title": "Minecraft* 1.21.11",
+    "app_class": "Minecraft* 1.21.11"
+  },
+  {
+    "initial_class": "steam_app_2246340",
+    "initial_title": "Monster Hunter Wilds",
+    "app_class": "steam_app_2246340"
+  },
+  {
+    "initial_class": "steam_app_1091500",
+    "initial_title": "Cyberpunk 2077 (C) 2020 by CD Projekt RED",
+    "app_class": "steam_app_1091500"
+  },
+  {
+    "initial_class": "steam_app_1091500",
+    "initial_title": "REDlauncher",
+    "app_class": "steam_app_1091500"
+  },
+  {
+    "initial_class": "steam_app_2357570",
+    "initial_title": "Overwatch",
+    "app_class": "steam_app_2357570"
+  },
+  {
     "initial_class": "steam_app_2909400",
     "initial_title": "FINAL FANTASY VII REBIRTH",
     "app_class": "steam_app_2909400"
+  },
+  {
+    "initial_class": "steam_app_1716740",
+    "initial_title": "Starfield",
+    "app_class": "steam_app_1716740"
   }
 ]

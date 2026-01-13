@@ -97,18 +97,29 @@ PanelWindow {
         anchors.leftMargin: 5
         spacing: 10
         
-        Image {
+        /*Image {
             source: Theme.logoPath
-            Layout.preferredHeight: 25
-            Layout.preferredWidth: 25
+            Layout.preferredHeight: 20
+            Layout.preferredWidth: 20
             fillMode: Image.PreserveAspectFit
             Layout.leftMargin: 5
+        }*/
+
+        QuickMenuButton{
+        	rootTopBar: root
         }
         
         MediaWidget {
             Layout.maximumWidth: 450 
         }
+
+
+        TestPopup {
+                    screen: root.screen
+                    anchorWindow: root
+        }
     }
+   
     
     WorkspaceSelector {
         anchors.horizontalCenter: parent.horizontalCenter

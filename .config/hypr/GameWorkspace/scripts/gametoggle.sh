@@ -4,6 +4,10 @@
 # Set your Main Monitor where the game should always appear
 MAIN_MONITOR="$1"
 
+# Set to true to force game into windowed mode on hide, and restore fullscreen on show.
+# Set to false to leave the window state exactly as it is (no resizing/flickering).
+ENABLE_FULLSCREEN_RESTORE=false
+
 
 # === FILES TO STORE STATES ===
 GAME_CACHE_FILE="/tmp/hypr_fullscreen_game"
@@ -20,23 +24,28 @@ if [[ "$active_special" == "special:games" ]]; then
     # CASE: CLOSING (Game -> Desktop)
     # ==========================================================
 
-    # 1. Handle Game Fullscreen Logic
-    window_info=$(hyprctl activewindow -j)
-    is_fullscreen=$(echo "$window_info" | jq -r '.fullscreen')
-    window_addr=$(echo "$window_info" | jq -r '.address')
+    # 1. Handle Game Fullscreen Logic (ONLY IF ENABLED)
+    if [ "$ENABLE_FULLSCREEN_RESTORE" = true ]; then
+        window_info=$(hyprctl activewindow -j)
+        is_fullscreen=$(echo "$window_info" | jq -r '.fullscreen')
+        window_addr=$(echo "$window_info" | jq -r '.address')
 
-    if [[ "$is_fullscreen" == "1" || "$is_fullscreen" == "2" ]]; then
-        # SAVE ADDRESS AND THE SPECIFIC STATE (1 or 2)
-        echo "$window_addr $is_fullscreen" > "$GAME_CACHE_FILE"
+        if [[ "$is_fullscreen" == "1" || "$is_fullscreen" == "2" ]]; then
+            # SAVE ADDRESS AND THE SPECIFIC STATE (1 or 2)
+            echo "$window_addr $is_fullscreen" > "$GAME_CACHE_FILE"
 
-        # Turn off the specific mode correctly so it restores cleanly later
-        if [[ "$is_fullscreen" == "1" ]]; then
-            hyprctl dispatch fullscreen 1 # Toggle off Maximize
+            # Turn off the specific mode correctly so it restores cleanly later
+            if [[ "$is_fullscreen" == "1" ]]; then
+                hyprctl dispatch fullscreen 1 # Toggle off Maximize
+            else
+                hyprctl dispatch fullscreen 0 # Toggle off True Fullscreen
+            fi
+            sleep 0.1
         else
-            hyprctl dispatch fullscreen 0 # Toggle off True Fullscreen
+            rm -f "$GAME_CACHE_FILE"
         fi
-        sleep 0.1
     else
+        # If disabled, ensure we don't leave stale cache files
         rm -f "$GAME_CACHE_FILE"
     fi
 
@@ -116,7 +125,6 @@ else
     #If main monitor was passed, do the check:
     if [ -n "$MAIN_MONITOR" ]; then
         # --- MAIN MONITOR CHECK ---
-        echo "Monitor passed: $MAIN_MONITOR"
         # Check if the game is ALREADY visible on the Main Monitor
         main_monitor_special=$(hyprctl monitors -j | jq -r ".[] | select(.name == \"$MAIN_MONITOR\") | .specialWorkspace.name")
 
@@ -127,10 +135,10 @@ else
         # Only toggle if it's NOT already there
         if [[ "$main_monitor_special" != "special:games" ]]; then
             hyprctl dispatch togglespecialworkspace games
-
         fi
     else
-        echo "No monitor argument passed. Skipping monitor-specific logic."
+        # If no monitor arg, just toggle where we are or where it was
+        hyprctl dispatch togglespecialworkspace games
     fi
 
     # Increased sleep for Minecraft/Java apps to render
@@ -139,7 +147,8 @@ else
     # 3. Focus the Game
     game_address=$(hyprctl clients -j | jq -r '.[] | select(.workspace.name == "special:games") | .address' | head -n 1)
 
-    if [[ -f "$GAME_CACHE_FILE" ]]; then
+    # --- RESTORE LOGIC (ONLY IF ENABLED) ---
+    if [ "$ENABLE_FULLSCREEN_RESTORE" = true ] && [[ -f "$GAME_CACHE_FILE" ]]; then
         # READ ADDRESS AND STATE
         read saved_addr saved_state < "$GAME_CACHE_FILE"
 
@@ -164,6 +173,7 @@ else
         fi
         rm -f "$GAME_CACHE_FILE"
     elif [[ -n "$game_address" ]]; then
+        # Standard focus if restore is disabled or no cache exists
         hyprctl dispatch focuswindow address:$game_address
     fi
 fi
