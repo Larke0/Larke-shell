@@ -112,12 +112,6 @@ PanelWindow {
         MediaWidget {
             Layout.maximumWidth: 450 
         }
-
-
-        TestPopup {
-                    screen: root.screen
-                    anchorWindow: root
-        }
     }
    
     

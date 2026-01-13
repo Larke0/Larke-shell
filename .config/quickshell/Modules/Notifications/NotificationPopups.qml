@@ -1,4 +1,5 @@
 import Quickshell
+import Quickshell.Hyprland
 import Quickshell.Wayland
 import QtQuick
 import QtQuick.Layouts
@@ -9,15 +10,17 @@ PanelWindow {
     
     anchors.top: true
     anchors.right: true
-    width: 300
+    implicitWidth: 300
+    implicitHeight: backgroundSurface.height
     margins.top: 0   
-    height: backgroundSurface.height
+    
+    
 
     WlrLayershell.layer: WlrLayer.Overlay
-    exclusionMode: ExclusionMode.None
     color: "transparent"
 
     property bool revealed: false
+    property var modelData
 
     Connections {
         target: notificationModel
@@ -31,7 +34,6 @@ PanelWindow {
     }
     
     visible: revealed || backgroundSurface.y > -(backgroundSurface.height - 1)
-    mask: backgroundSurface
 
     function removeNotification(notificationObject, force = false) {
          var index = -1;

@@ -8,7 +8,6 @@ import "../../theme" // Import your theme for colors
 
 PanelWindow {
     id: root
-	mask: content
     property var modelData
     screen: modelData
     visible: revealed || content.y > -(content.height - 1)

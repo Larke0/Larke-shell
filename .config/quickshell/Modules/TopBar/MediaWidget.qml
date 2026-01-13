@@ -4,9 +4,11 @@ import QtQuick
 import QtQuick.Layouts
 import "../../theme"
 
-RowLayout {
+Item {
     id: mediaRoot
-    spacing: 8
+
+    implicitWidth: contentLayout.implicitWidth
+    implicitHeight: contentLayout.implicitHeight
 
     // --- STATE ---
     property var trackTitle: "No Media"
@@ -92,30 +94,33 @@ RowLayout {
             }
         }
     }
+    RowLayout {
+        id: contentLayout
+        spacing: 8
+        // 1. Icon
+        Text {
+            text: "" 
+            color: mediaRoot.isPlaying ? Theme.accent : Theme.empty
+            font { family: "JetBrainsMono Nerd Font"; pixelSize: 16 }
+        }
 
-    // 1. Icon
-    Text {
-        text: "" 
-        color: mediaRoot.isPlaying ? Theme.accent : Theme.empty
-        font { family: "JetBrainsMono Nerd Font"; pixelSize: 16 }
-    }
+        // 2. Title
+        Text {
+            text: (mediaRoot.trackTitle || "Unknown") + ""
+            color: mediaRoot.isPlaying ? Theme.accent_down : Theme.empty
+            font { family: "JetBrainsMono Nerd Font"; pixelSize: 14; bold: true }
+            elide: Text.ElideRight
+            Layout.maximumWidth: 150
+        }
 
-    // 2. Title
-    Text {
-        text: (mediaRoot.trackTitle || "Unknown") + ""
-        color: mediaRoot.isPlaying ? Theme.accent_down : Theme.empty
-        font { family: "JetBrainsMono Nerd Font"; pixelSize: 14; bold: true }
-        elide: Text.ElideRight
-        Layout.maximumWidth: 150
-    }
-
-    // 3. Artist
-    Text {
-        text: mediaRoot.trackArtist ? ("- " + mediaRoot.trackArtist) : ""
-        color: mediaRoot.isPlaying ? Theme.accent_down : Theme.empty
-        font { family: "JetBrainsMono Nerd Font"; pixelSize: 14 }
-        visible: text.length > 2
-        elide: Text.ElideRight
-        Layout.maximumWidth: 110 
+        // 3. Artist
+        Text {
+            text: mediaRoot.trackArtist ? ("- " + mediaRoot.trackArtist) : ""
+            color: mediaRoot.isPlaying ? Theme.accent_down : Theme.empty
+            font { family: "JetBrainsMono Nerd Font"; pixelSize: 14 }
+            visible: text.length > 2
+            elide: Text.ElideRight
+            Layout.maximumWidth: 110 
+        }
     }
 }
