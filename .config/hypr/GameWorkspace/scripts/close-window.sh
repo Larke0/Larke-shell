@@ -29,9 +29,9 @@ for target in "${TARGETS[@]}"; do
 done
 
 if [[ "$FORCE_KILL" -eq 1 ]]; then
-    # METHOD 1: The Nuclear Option (for games)
+    # METHOD 1: Kill gamescope
     kill -9 "$PID"
-    #notify-send -u low -t 2000 "☠️ Force Killed" "$CLASS"
+    #notify-send -u low -t 2000 "Force Killed" "$CLASS"
 else
     # METHOD 2: The Polite Option (for regular apps)
     hyprctl dispatch closewindow address:"$ADDRESS"

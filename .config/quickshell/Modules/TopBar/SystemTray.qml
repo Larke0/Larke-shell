@@ -16,6 +16,11 @@ RowLayout {
 
         Item {
         	id: trayItem
+
+			property bool isFcitx: modelData.id.toLowerCase().includes("fcitx")    
+	        // Hide and remove from layout if it's Fcitx
+	        visible: !isFcitx
+        	
             Layout.preferredWidth: 20
             Layout.preferredHeight: 20
 

@@ -3,18 +3,18 @@ import QtQuick
 
 QtObject {
     // Backgrounds
-    property color background: "#131318"
-    property color barBackground: "#1f1f25"
+    property color background: "#111318"
+    property color barBackground: "#1d2024"
     
     // Accents
-    property color accent: "#bfc2ff"
-    property color secondary_accent: "#a6a2ff"
-    property color tertiary_accent: "#e8b9d4"
-    property color occupied: "#e8b9d4"
-    property color accent_down: "#bfc2ff"
-    property color empty: "#46464f"
+    property color accent: "#a8c8ff"
+    property color secondary_accent: "#9abbff"
+    property color tertiary_accent: "#dbbce1"
+    property color occupied: "#dbbce1"
+    property color accent_down: "#a8c8ff"
+    property color empty: "#43474e"
     
-    property color text: "#e4e1e9"
+    property color text: "#e1e2e9"
 
     property string logoPath: "file:///home/larke/.config/quickshell/assets/logo-arch-linux-icon.png"
 }

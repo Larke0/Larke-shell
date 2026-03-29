@@ -92,30 +92,34 @@ PanelWindow {
     // --- CONTENT ---
     RowLayout {
         anchors.left: parent.left
+        anchors.right: wsSelector.left
         anchors.top: parent.top
         height: 31
         anchors.leftMargin: 5
+        anchors.rightMargin: 20
         spacing: 10
-        
-        /*Image {
-            source: Theme.logoPath
-            Layout.preferredHeight: 20
-            Layout.preferredWidth: 20
-            fillMode: Image.PreserveAspectFit
-            Layout.leftMargin: 5
-        }*/
 
         QuickMenuButton{
         	rootTopBar: root
         }
-        
-        MediaWidget {
+
+
+        Text {
+            color: Theme.accent
+            font { family: "JetBrainsMono Nerd Font"; pixelSize: 13 ;  bold: true}
+            text: Hyprland.activeToplevel && Hyprland.activeToplevel.wayland ? Hyprland.activeToplevel.title : ""
             Layout.maximumWidth: 450 
+            elide: Text.ElideRight
+        }
+        
+        Item {
+            Layout.fillWidth: true
         }
     }
    
     
     WorkspaceSelector {
+        id: wsSelector
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
         anchors.topMargin: (45 / 2) - (height / 2) -8 // Centers
@@ -127,9 +131,24 @@ PanelWindow {
     RowLayout {
         anchors.right: parent.right
         anchors.top: parent.top
+        anchors.left: wsSelector.right
         height: 31
         anchors.rightMargin: 15
+        anchors.leftMargin: 15
         
+        
+
+         Item {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            MediaWidget {
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.horizontalCenter: parent.horizontalCenter
+                Layout.maximumWidth: 450 
+                Layout.fillHeight: true
+            }
+        }
+
         SystemTray {
             Layout.rightMargin: 10
             parentWindow: root

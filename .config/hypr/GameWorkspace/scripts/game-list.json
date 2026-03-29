@@ -85,11 +85,6 @@
     "app_class": "steam_app_1091500"
   },
   {
-    "initial_class": "steam_app_2357570",
-    "initial_title": "Overwatch",
-    "app_class": "steam_app_2357570"
-  },
-  {
     "initial_class": "steam_app_2909400",
     "initial_title": "FINAL FANTASY VII REBIRTH",
     "app_class": "steam_app_2909400"
@@ -98,5 +93,70 @@
     "initial_class": "steam_app_1716740",
     "initial_title": "Starfield",
     "app_class": "steam_app_1716740"
+  },
+  {
+    "initial_class": "HytaleClient",
+    "initial_title": "Hytale",
+    "app_class": "HytaleClient"
+  },
+  {
+    "initial_class": "steam_app_413150",
+    "initial_title": "Stardew Valley",
+    "app_class": "steam_app_413150"
+  },
+  {
+    "initial_class": "Minecraft* 1.21.1",
+    "initial_title": "Minecraft* 1.21.1",
+    "app_class": "Minecraft* 1.21.1"
+  },
+  {
+    "initial_class": "Minecraft* 1.21.10",
+    "initial_title": "Minecraft* 1.21.10",
+    "app_class": "Minecraft* 1.21.10"
+  },
+  {
+    "initial_class": "steam_app_2357570",
+    "initial_title": "Overwatch",
+    "app_class": "steam_app_2357570"
+  },
+  {
+    "initial_class": "gamescope",
+    "initial_title": "Endfield",
+    "app_class": "gamescope"
+  },
+  {
+    "initial_class": "steam_proton",
+    "initial_title": "Endfield",
+    "app_class": "steam_proton"
+  },
+  {
+    "initial_class": "RimWorldLinux",
+    "initial_title": "RimWorld by Ludeon Studios",
+    "app_class": "RimWorldLinux"
+  },
+  {
+    "initial_class": "Minecraft* 1.20.1",
+    "initial_title": "Minecraft* 1.20.1",
+    "app_class": "Minecraft* 1.20.1"
+  },
+  {
+    "initial_class": "bg3",
+    "initial_title": "Baldur's Gate 3 (1920x1080) - (Vulkan) - (6 + 6 WT)",
+    "app_class": "bg3"
+  },
+  {
+    "initial_class": "steam_app_699130",
+    "initial_title": "WWZ",
+    "app_class": "steam_app_699130"
+  },
+  {
+    "initial_class": "steam_app_22380",
+    "initial_title": "Fallout: New Vegas",
+    "app_class": "steam_app_22380"
+  },
+  {
+    "initial_class": "steam_app_default",
+    "initial_title": "The Last of Us™ Part I ",
+    "app_class": "steam_app_default"
   }
 ]
