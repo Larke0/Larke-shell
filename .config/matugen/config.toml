@@ -18,7 +18,7 @@ output_path = '~/.config/gtk-4.0/gtk.css'
 
 [templates.rasi]
 input_path = '~/.config/matugen/templates/rounded-nord-dark-larke.rasi'
-output_path = '~/.local/share/rofi/themes/rounded-nord-dark-larke.rasi'
+output_path = '~/.config/rofi/rounded-nord-dark-larke.rasi'
 
 
 [templates.hyprland]
