@@ -115,7 +115,7 @@ Item {
 
         // 3. Artist
         Text {
-            text: mediaRoot.trackArtist ? ("- " + mediaRoot.trackArtist) : ""
+            text: mediaRoot.trackArtist ? ("" + mediaRoot.trackArtist) : ""
             color: mediaRoot.isPlaying ? Theme.accent_down : Theme.empty
             font { family: "JetBrainsMono Nerd Font"; pixelSize: 11 }
             visible: text.length > 2

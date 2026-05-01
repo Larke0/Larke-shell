@@ -15,7 +15,9 @@ RowLayout {
         model: SystemTray.items
 
         Item {
-        	id: trayItem
+          id: trayItem
+
+          
 
 			property bool isFcitx: modelData.id.toLowerCase().includes("fcitx")    
 	        // Hide and remove from layout if it's Fcitx
@@ -35,9 +37,33 @@ RowLayout {
      		    }
             }
 
+            // Sanitize the incoming icon data
+            property string cleanIcon: {
+                // Ensure we are working with a string
+                let rawSource = modelData.icon ? modelData.icon.toString() : "";
+                
+                // 1. The Spotify Hard-Override
+                // 'spotify-linux-32' rarely exists in standard themes. 
+                // We force it to ask for the standard 'spotify' icon instead.
+                if (modelData.id.toLowerCase() === "spotify-client") {
+                    return "image://icon/spotify"; 
+                }
+                
+                // 2. The Universal Fix (Helps Steam and others)
+                // If any app sends an unsupported '?path=' parameter, chop it off.
+                // "image://icon/steam_tray_mono?path=/home/..." becomes "image://icon/steam_tray_mono"
+                if (rawSource.includes("?path=")) {
+                    return rawSource.split("?")[0];
+                }
+                
+                // 3. Normal apps pass through untouched
+                return rawSource;
+            }
+
             Image {
                 anchors.fill: parent
-                source: modelData.icon
+                // Feed the sanitized string to the image component
+                source: cleanIcon
                 fillMode: Image.PreserveAspectFit
                 smooth: true
             }
