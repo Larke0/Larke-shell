@@ -1,12 +1,14 @@
 return {
   {
-    "folke/tokyonight.nvim",
-    opts = {
-      transparent = true,
-      styles = {
-        sidebars = "transparent",
-        floats = "transparent",
-      },
-    },
+    "nvim-mini/mini.base16",
+    version = false,
+    priority = 1000,
+    config = function()
+      local colors = require("matugen_colors")
+      require("mini.base16").setup({
+        palette = colors,
+        use_cterm = false,
+      })
+    end,
   },
 }

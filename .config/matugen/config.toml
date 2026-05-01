@@ -41,3 +41,7 @@ output_path = '~/.config/hypr/hyprlock.conf'
 [templates.kitty]
 input_path = '~/.config/matugen/templates/kitty-theme.conf'
 output_path = '~/.config/kitty/kitty-theme.conf'
+
+[templates.neovim]
+input_path = '~/.config/matugen/templates/neovim.lua'
+output_path = '~/.config/nvim/lua/matugen_colors.lua'
