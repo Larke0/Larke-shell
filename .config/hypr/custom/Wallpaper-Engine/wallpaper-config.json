@@ -1,8 +1,0 @@
-{
-  "FPS": {
-    "default": 30,
-    "gamemode": 0,
-    "powersave": 10
-  },
-  "transition_mask": false
-}

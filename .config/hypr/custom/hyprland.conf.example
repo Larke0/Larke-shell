@@ -1,0 +1,81 @@
+# =====================================================================
+# Per-host Hyprland configuration
+# =====================================================================
+# This file is sourced FIRST by the root hyprland.conf, before any of
+# the tracked module configs in hyprland/. Use it for anything that
+# differs between machines:
+#
+#   - Monitor outputs and the $monitor1 / $monitor2 variables
+#     consumed by hyprland/monitor.conf
+#   - GPU env vars (LIBVA_DRIVER_NAME, VDPAU_DRIVER, ...)
+#   - Per-device input tweaks (touchpads, mice)
+#   - Autostart apps that aren't installed on every host
+#     (Steam, Discord, Spotify, ProtonVPN, ...)
+#
+# Bootstrap on a new machine:
+#   cp custom/hyprland.conf.example custom/hyprland.conf
+#   $EDITOR custom/hyprland.conf
+#
+# See custom/examples/ for full Desktop and Laptop reference configs.
+# =====================================================================
+
+
+###############
+### MONITORS ##
+###############
+# $monitor1 / $monitor2 are consumed by hyprland/monitor.conf to pin
+# workspaces 1-10 → $monitor1 and 11-20 → $monitor2. If you only have
+# one monitor, leave $monitor2 unset (workspace pins to a missing
+# output are silently ignored).
+
+$monitor1 = ,preferred,auto,auto
+# $monitor2 =
+
+monitor = $monitor1
+# monitor = $monitor2
+
+
+######################
+### GPU / DRIVERS ####
+######################
+# Pick the right VA-API / VDPAU driver for your GPU.
+#   AMD:     radeonsi
+#   Intel:   iHD (or i965 on older hw)
+#   Nvidia:  nvidia
+# env = LIBVA_DRIVER_NAME, radeonsi
+# env = VDPAU_DRIVER, radeonsi
+
+
+########################
+### PER-DEVICE INPUT ###
+########################
+# Example: laptop touchpad
+# device {
+#     name = msft0001:01-04f3:31ad-touchpad
+#     clickfinger_behavior = false
+#     tap-to-click = true
+#     scroll_method = edge
+#     sensitivity = +0.6
+#     disable_while_typing = false
+# }
+
+
+######################
+### AUTOSTART APPS ###
+######################
+# Apps that aren't on every host. $lock-wait is defined in
+# hyprland/general.conf and waits until the user has unlocked.
+# exec-once = sleep 8 && flatpak run com.discordapp.Discord --start-minimized
+# exec-once = $lock-wait && spotify --start-minimized
+# exec-once = sleep 8 && steam -silent
+# exec-once = sleep 8 && flatpak run com.rtosta.zapzap --silent
+# exec-once = $lock-wait && protonvpn-app
+
+
+############
+### MISC ###
+############
+# misc {
+#     vrr = 1
+#     vfr = false
+# }
