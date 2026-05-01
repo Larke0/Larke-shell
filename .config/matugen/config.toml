@@ -16,6 +16,14 @@ output_path = '~/.config/gtk-3.0/gtk.css'
 input_path = '~/.config/matugen/templates/catppuccin-override.css'
 output_path = '~/.config/gtk-4.0/gtk.css'
 
+[templates.qt6ct]
+input_path = '~/.config/matugen/templates/qt6ct.conf'
+output_path = '~/.config/qt6ct/colors/matugen.conf'
+
+[templates.kvantum_svg]
+input_path = '~/.config/matugen/templates/kvantum.svg'
+output_path = '~/.config/Kvantum/catppuccin-mocha-sapphire/catppuccin-mocha-sapphire.svg'
+
 [templates.rasi]
 input_path = '~/.config/matugen/templates/rounded-nord-dark-larke.rasi'
 output_path = '~/.config/rofi/rounded-nord-dark-larke.rasi'
@@ -29,3 +37,7 @@ output_path = '~/.config/hypr/hyprland/theme.conf'
 [templates.hyprlock]
 input_path = '~/.config/matugen/templates/hyprlock-theme.conf'
 output_path = '~/.config/hypr/hyprlock.conf'
+
+[templates.kitty]
+input_path = '~/.config/matugen/templates/kitty-theme.conf'
+output_path = '~/.config/kitty/kitty-theme.conf'
