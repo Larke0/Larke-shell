@@ -178,5 +178,10 @@
     "initial_class": "Minecraft* 1.21.1",
     "initial_title": "Minecraft: NeoForge Loading...",
     "app_class": "Minecraft* 1.21.1"
+  },
+  {
+    "initial_class": "gamescope",
+    "initial_title": "XIVLauncher 1.4.0 (06c3298)",
+    "app_class": "gamescope"
   }
 ]
