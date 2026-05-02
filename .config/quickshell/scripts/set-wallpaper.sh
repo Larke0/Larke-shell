@@ -6,5 +6,4 @@ awww img "$WALLPAPER"
 
 ~/.config/quickshell/scripts/set-theme.sh
 
-
-ln -sf "$WALLPAPER" ~/.config/quickshell/assets/wallpaper
+ln -sf "$WALLPAPER" ~/.config/hypr/assets/wallpaper
