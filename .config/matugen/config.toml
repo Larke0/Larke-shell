@@ -9,11 +9,11 @@ output_path = '~/.config/quickshell/theme/Theme.qml'
 
 
 [templates.gtk3]
-input_path = '~/.config/matugen/templates/catppuccin-override.css'
+input_path = '~/.config/matugen/templates/gtk3-override.css'
 output_path = '~/.config/gtk-3.0/gtk.css'
 
 [templates.gtk4]
-input_path = '~/.config/matugen/templates/catppuccin-override.css'
+input_path = '~/.config/matugen/templates/gtk4-override.css'
 output_path = '~/.config/gtk-4.0/gtk.css'
 
 [templates.qt6ct]
