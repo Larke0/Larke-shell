@@ -21,7 +21,7 @@ Row {
             text: selectorRoot.kanjiMap[index]
 
             color: isActive ? Theme.accent : (ws ? Theme.occupied : Theme.empty)
-            font { pixelSize: 18; bold: true }
+            font { family: "Noto Sans CJK JP"; pixelSize: 18; bold: false }
 
             MouseArea {
                 anchors.fill: parent

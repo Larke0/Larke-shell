@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # 1. Get current wallpaper
 WALLPAPER=$(awww query | awk -F 'image: ' '{print $2}' | head -n 1)

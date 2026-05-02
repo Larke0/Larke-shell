@@ -46,7 +46,7 @@ RowLayout {
                 // 'spotify-linux-32' rarely exists in standard themes. 
                 // We force it to ask for the standard 'spotify' icon instead.
                 if (modelData.id.toLowerCase() === "spotify-client") {
-                    return "image://icon/spotify"; 
+                    return "image://icon/com.spotify.Client"; 
                 }
                 
                 // 2. The Universal Fix (Helps Steam and others)

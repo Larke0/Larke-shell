@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # === CONFIGURATION ===
 # Set your Main Monitor where the game should always appear

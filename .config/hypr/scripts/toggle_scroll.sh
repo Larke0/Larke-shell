@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 if [ "$1" == "off" ]; then
   hyprctl keyword input:scroll_factor 0

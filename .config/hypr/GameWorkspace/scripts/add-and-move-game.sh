@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # --- CONFIGURATION ---
 JSON_FILE="$HOME/.config/hypr/GameWorkspace/scripts/game-list.json"

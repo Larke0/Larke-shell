@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Check if the second argument ($1) is exactly "yes"
 if [ "$1" == "yes" ]; then
