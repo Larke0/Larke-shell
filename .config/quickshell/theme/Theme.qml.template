@@ -16,5 +16,5 @@ QtObject {
     
     property color text: "{{colors.on_surface.default.hex}}"
 
-    property string logoPath: "file:///home/larke/.config/quickshell/assets/logo-arch-linux-icon.png"
+    property string logoPath: "file:///home/larke/.config/quickshell/assets/logo-nix-icon.png"
 }

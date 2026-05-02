@@ -3,12 +3,17 @@
 # 1. Cleanup
 TEMP_FILE="/tmp/screenshot_$(date +%s).png"
 pkill -x still
-pkill -x slurp
+pkill -x wayfreeze
 
 # 2. The Capture
 # We run grim and slurp INSIDE still.
 # We don't pipe to swappy here so 'still' can exit immediately after capture.
-still -c "grim -g \"\$(slurp -d -b 1e1e2e80 -c b4befeff -w 2; sleep .3)\" $TEMP_FILE"
+wayfreeze &
+grim -g "$(
+  slurp -d -b 1e1e2e80 -c b4befeff -w 2
+  sleep .3
+)" $TEMP_FILE
+pkill -x wayfreeze
 
 # 3. The Escape/Failsafe Check
 # If the file doesn't exist (because you hit Escape), or is empty, we just quit.
