@@ -45,3 +45,4 @@ output_path = '~/.config/kitty/kitty-theme.conf'
 [templates.neovim]
 input_path = '~/.config/matugen/templates/neovim.lua'
 output_path = '~/.config/nvim/lua/matugen_colors.lua'
+

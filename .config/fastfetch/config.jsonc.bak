@@ -1,0 +1,108 @@
+{
+  "display": {
+      "color": {
+          "keys": "35",
+          "title": "35"
+      }
+  },
+  "logo": {
+      "color": {
+          "1": "35",
+          "2": "36"
+      }
+  },
+
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/master/doc/json_schema.json",
+  "modules": [
+ 	{
+             "type": "title",
+             "key": " ",
+             "format": "  󰒋 {1}@{2}",
+             "separator": " "
+     },
+      
+     {
+                 "type": "uptime",
+                 "key": " ",
+                 "format": "  ⏻ {?2}{2}h {?}{3}m",
+                 "separator": " "
+    },
+  	{
+  	        "type": "custom",
+  	        "format": "┌──────── Software ────────┐",
+ 	 },    
+     {
+            "type": "os",
+            "key": " ",
+            "format": "  󰣇 {2}",
+            "separator": " "
+    },
+    {
+                "type": "kernel",
+                "key": " ",
+                "format": "  󰆦 Kernel {2}",
+                "separator": " "
+    },
+    {
+                    "type": "wm",
+                    "key": " ",
+                    "format": "  󰆦 {1} ({3})",
+                    "separator": " "
+    },
+	{
+	        "type": "custom",
+	        "format": "└──────────────────────────┘"
+    },
+    
+    {
+      	        "type": "custom",
+      	        "format": "┌──────── Hardware ────────┐",
+  	},
+   	{
+   	            "type": "board",
+   	            "key": " ",
+   	            "format": "  󰚗 {1}",
+   	            "separator": " "
+ 	},
+    {
+            "type": "cpu",
+            "key": " ",
+            "format": "   {1}",
+            "separator": " "
+    },
+    {
+        "type": "gpu",
+        "key": " ",
+        "format": "  󰢮 {2}",
+        "separator": " "
+    },
+    {
+            "type": "memory",
+            "key": " ",
+            "format": "   {2}",
+            "separator": " "
+    },
+    {
+    	        "type": "custom",
+    	        "format": "└──────────────────────────┘"
+    },
+    {
+        "type": "custom",
+        "format": "┌─────── Disk Usage ───────┐"
+    },
+    {
+        "type": "disk",
+        "key": " ",
+        "format": "  󰋊 {2} {3}"
+
+    },
+    {
+        "type": "custom",
+        "format": "└──────────────────────────┘"
+    }
+
+
+    
+  ]
+}
+

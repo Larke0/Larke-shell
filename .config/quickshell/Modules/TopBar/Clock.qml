@@ -23,7 +23,7 @@ RowLayout {
         // "h:mm AP" = 12h format (e.g., 2:30 PM)
         text: Qt.formatDateTime(parent.currentDate, "hh:mm")
         
-        color: "#cdd6f4" // Catppuccin Text
+        color: Theme.accent 
         font { 
             pixelSize: 20
             bold: true
@@ -36,7 +36,7 @@ RowLayout {
         // "MMM dd" = Short Month + Day (e.g., Dec 30)
         text: Qt.formatDateTime(parent.currentDate, "MMM dd")
         
-        color: "#bac2de" // Catppuccin Subtext
+        color: Theme.accent
         font { 
             pixelSize: 18
             bold: true
