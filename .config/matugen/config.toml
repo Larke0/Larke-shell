@@ -2,6 +2,7 @@
 reload_apps = true
 set_wallpaper = false
 scheme_type = "scheme-expressive"
+mode = "dark"
 
 [templates.quickshell]
 input_path = '~/.config/quickshell/theme/Theme.qml.template'
