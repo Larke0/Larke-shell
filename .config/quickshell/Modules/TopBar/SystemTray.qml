@@ -11,59 +11,48 @@ RowLayout {
 
     property var parentWindow
 
+    // First repeater: everything except fcitx and nm-applet
     Repeater {
         model: SystemTray.items
 
         Item {
-          id: trayItem
+            id: trayItem
 
-          
+            property string itemId: modelData.id.toLowerCase()
+            visible: !itemId.includes("fcitx") && itemId !== "nm-applet"
 
-			property bool isFcitx: modelData.id.toLowerCase().includes("fcitx")    
-	        // Hide and remove from layout if it's Fcitx
-	        visible: !isFcitx
-        	
             Layout.preferredWidth: 20
             Layout.preferredHeight: 20
 
             QsMenuAnchor {
-            	id: trayMenu
-            	menu: modelData.menu
-
-				anchor {
-     		        window: parentWindow
-     		        // Initialize with 0, but we will update this before opening
-     		        rect: Qt.rect(0, 0, 0, 0)
-     		    }
+                id: trayMenu
+                menu: modelData.menu
+                anchor {
+                    window: parentWindow
+                    rect: Qt.rect(0, 0, 0, 0)
+                }
             }
 
-            // Sanitize the incoming icon data
             property string cleanIcon: {
-                // Ensure we are working with a string
                 let rawSource = modelData.icon ? modelData.icon.toString() : "";
-                
-                // 1. The Spotify Hard-Override
-                // 'spotify-linux-32' rarely exists in standard themes. 
-                // We force it to ask for the standard 'spotify' icon instead.
-                if (modelData.id.toLowerCase() === "spotify-client") {
-                    return "image://icon/com.spotify.Client"; 
+
+                // Spotify: force standard icon
+                if (itemId === "spotify-client") {
+                    return "image://icon/com.spotify.Client";
                 }
-                
-                // 2. The Universal Fix (Helps Steam and others)
-                // If any app sends an unsupported '?path=' parameter, chop it off.
-                // "image://icon/steam_tray_mono?path=/home/..." becomes "image://icon/steam_tray_mono"
+
+                // Strip unsupported '?path=' params (Steam, etc.)
                 if (rawSource.includes("?path=")) {
                     return rawSource.split("?")[0];
                 }
-                
-                // 3. Normal apps pass through untouched
+
                 return rawSource;
             }
 
             Image {
                 anchors.fill: parent
-                // Feed the sanitized string to the image component
                 source: cleanIcon
+                sourceSize: Qt.size(parent.width, parent.height)
                 fillMode: Image.PreserveAspectFit
                 smooth: true
             }
@@ -71,22 +60,13 @@ RowLayout {
             MouseArea {
                 anchors.fill: parent
                 acceptedButtons: Qt.LeftButton | Qt.RightButton
-
                 onClicked: (mouse) => {
                     if (mouse.button === Qt.LeftButton) {
-                        // 1. Try standard DBus activation
                         modelData.activate();
-                    } 
-                    else if (mouse.button === Qt.RightButton) {
-                        // Try to trigger the secondary menu action
+                    } else if (mouse.button === Qt.RightButton) {
                         var coords = trayItem.mapToItem(parentWindow.contentItem, 0, 0);
-						console.log("App:", modelData.title, "Has Menu:", modelData.hasMenu, "Handle:", modelData.menu);
-
-						var visualBottom = parentWindow.height + parentWindow.margins.bottom;
-						// Update the anchor rect
-		                trayMenu.anchor.rect = Qt.rect(coords.x, visualBottom, trayItem.width, 0);
-		                
-		                // Now open the menu
+                        var visualBottom = parentWindow.height + parentWindow.margins.bottom;
+                        trayMenu.anchor.rect = Qt.rect(coords.x, visualBottom, trayItem.width, 0);
                         if (modelData.hasMenu) {
                             trayMenu.open();
                         }
@@ -95,5 +75,68 @@ RowLayout {
             }
         }
     }
-}
 
+    // Second repeater: nm-applet always last
+    Repeater {
+        model: SystemTray.items
+
+        Item {
+            id: nmTrayItem
+
+            property string itemId: modelData.id.toLowerCase()
+            visible: itemId === "nm-applet"
+
+            Layout.preferredWidth: 20
+            Layout.preferredHeight: 20
+
+            QsMenuAnchor {
+                id: nmTrayMenu
+                menu: modelData.menu
+                anchor {
+                    window: parentWindow
+                    rect: Qt.rect(0, 0, 0, 0)
+                }
+            }
+
+            property string cleanIcon: {
+                let raw = modelData.icon ? modelData.icon.toString() : "";
+                let iconName = raw.replace("image://icon/", "");
+                let mapping = {
+                    "nm-signal-100": "network-wireless-signal-excellent",
+                    "nm-signal-75": "network-wireless-signal-good",
+                    "nm-signal-50": "network-wireless-signal-ok",
+                    "nm-signal-25": "network-wireless-signal-low",
+                    "nm-signal-00": "network-wireless-signal-none",
+                    "nm-no-connection": "network-wireless-offline"
+                };
+                let mapped = mapping[iconName] || "network-wireless-signal-excellent";
+                return "file:///run/current-system/sw/share/icons/Papirus/16x16/panel/" + mapped + ".svg";
+            }
+
+            Image {
+                anchors.fill: parent
+                source: cleanIcon
+                sourceSize: Qt.size(parent.width, parent.height)
+                fillMode: Image.PreserveAspectFit
+                smooth: true
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                acceptedButtons: Qt.LeftButton | Qt.RightButton
+                onClicked: (mouse) => {
+                    if (mouse.button === Qt.LeftButton) {
+                        modelData.activate();
+                    } else if (mouse.button === Qt.RightButton) {
+                        var coords = nmTrayItem.mapToItem(parentWindow.contentItem, 0, 0);
+                        var visualBottom = parentWindow.height + parentWindow.margins.bottom;
+                        nmTrayMenu.anchor.rect = Qt.rect(coords.x, visualBottom, nmTrayItem.width, 0);
+                        if (modelData.hasMenu) {
+                            nmTrayMenu.open();
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
