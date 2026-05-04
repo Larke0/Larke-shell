@@ -135,7 +135,6 @@ PanelWindow {
         property string baseColor: Theme.empty
         property string hoverColor:  Theme.accent
         
-        // Added properties to control size per-button
         property int btnWidth: 80
         property int btnHeight: 50
 
@@ -203,7 +202,6 @@ PanelWindow {
             anchors.centerIn: parent
             spacing: 2
             
-            // You can replace this Text with an 'IconImage' later
             Text {
                 text: toggle.name
                 color: toggle.active ? "black" : "white"
@@ -212,13 +210,6 @@ PanelWindow {
                 font.family: toggle.font
                 font.pixelSize: toggle.font_size
             }
-            
-            /*Text {
-                text: toggle.active ? "On" : "Off"
-                color: toggle.active ? "black" : "gray"
-                font.pixelSize: 10
-                Layout.alignment: Qt.AlignHCenter
-            }*/
         }      
     }
 
@@ -248,8 +239,9 @@ PanelWindow {
             color: Theme.secondary_accent
 
             RowLayout{
-
-                anchors.centerIn: parent
+                anchors.fill: parent
+                anchors.leftMargin: 15
+                anchors.rightMargin: 15
                 spacing: 5
                 Text {
                     id: textName          
@@ -268,6 +260,7 @@ PanelWindow {
                     font.bold: true
                     font.pixelSize: selector.font_size
                     elide: Text.ElideRight
+                    Layout.fillWidth: true
                 }
 
                 Text {
@@ -307,7 +300,6 @@ PanelWindow {
                 Repeater {
                     model: selector.option
                     delegate: Rectangle {
-                        // FIX: Fill the width of the ColumnLayout, don't hardcode sizes
                         Layout.fillWidth: true 
                         
                         height: selector.buttons_height
