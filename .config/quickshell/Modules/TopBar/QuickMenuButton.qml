@@ -4,6 +4,7 @@ import Quickshell.Hyprland
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Shapes
+import Quickshell.Io
 import "../../theme"
 
 

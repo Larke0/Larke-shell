@@ -19,13 +19,11 @@ RowLayout {
     
     // The Time
     Text {
-        // "hh:mm" = 24h format (e.g., 14:30)
-        // "h:mm AP" = 12h format (e.g., 2:30 PM)
         text: Qt.formatDateTime(parent.currentDate, "hh:mm")
         
         color: Theme.accent 
         font { 
-            pixelSize: 20
+            pixelSize: 15
             bold: true
             family: "JetBrainsMono Nerd Font" // Or your preferred font
         }
@@ -38,7 +36,7 @@ RowLayout {
         
         color: Theme.accent
         font { 
-            pixelSize: 18
+            pixelSize: 15
             bold: true
             family: "JetBrainsMono Nerd Font"
         }

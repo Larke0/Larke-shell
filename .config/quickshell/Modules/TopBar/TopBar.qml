@@ -154,7 +154,9 @@ PanelWindow {
             Layout.rightMargin: 10
             parentWindow: root
         }
-        
+        BatteryWidget {
+            Layout.rightMargin: 8
+        }
         Clock { }
     }
 }

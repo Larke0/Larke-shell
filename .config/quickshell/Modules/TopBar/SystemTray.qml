@@ -110,7 +110,7 @@ RowLayout {
                     "nm-no-connection": "network-wireless-offline"
                 };
                 let mapped = mapping[iconName] || "network-wireless-signal-excellent";
-                return "file:///run/current-system/sw/share/icons/Papirus/16x16/panel/" + mapped + ".svg";
+                return "file:///run/current-system/sw/share/icons/Papirus-Dark/16x16/panel/" + mapped + ".svg";
             }
 
             Image {
