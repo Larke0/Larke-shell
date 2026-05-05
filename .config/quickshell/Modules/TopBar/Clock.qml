@@ -23,7 +23,7 @@ RowLayout {
         
         color: Theme.accent 
         font { 
-            pixelSize: 15
+            pixelSize: 16
             bold: true
             family: "JetBrainsMono Nerd Font" // Or your preferred font
         }
@@ -36,7 +36,7 @@ RowLayout {
         
         color: Theme.accent
         font { 
-            pixelSize: 15
+            pixelSize: 16
             bold: true
             family: "JetBrainsMono Nerd Font"
         }
