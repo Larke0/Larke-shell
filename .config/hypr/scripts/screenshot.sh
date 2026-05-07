@@ -2,7 +2,6 @@
 
 # 1. Cleanup
 TEMP_FILE="/tmp/screenshot_$(date +%s).png"
-pkill -x still
 pkill -x wayfreeze
 
 # 2. The Capture
@@ -19,7 +18,7 @@ pkill -x wayfreeze
 # If the file doesn't exist (because you hit Escape), or is empty, we just quit.
 if [ ! -s "$TEMP_FILE" ]; then
   rm -f "$TEMP_FILE"
-  pkill -x still # Extra safety to ensure screen is unfrozen
+  pkill -x wayfreeze # Extra safety to ensure screen is unfrozen
   exit 0
 fi
 
