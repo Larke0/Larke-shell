@@ -38,7 +38,7 @@ RowLayout {
 
                 // Spotify: force standard icon
                 if (itemId === "spotify-client") {
-                    return "image://icon/com.spotify.Client";
+                    return "file:///run/current-system/sw/share/icons/Papirus-Dark/32x32/apps/spotify.svg";
                 }
 
                 // Strip unsupported '?path=' params (Steam, etc.)
@@ -47,6 +47,12 @@ RowLayout {
                 }
 
                 return rawSource;
+            }
+
+            Component.onCompleted: {
+                console.log("=== TRAY ITEM DETECTED ===");
+                console.log("ID:", itemId);
+                console.log("Raw Icon:", modelData.icon ? modelData.icon.toString() : "None");
             }
 
             Image {
