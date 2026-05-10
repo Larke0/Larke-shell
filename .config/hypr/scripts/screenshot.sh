@@ -1,30 +1,21 @@
 #!/usr/bin/env bash
 
-# 1. Cleanup
+# 1. Export the styling so grimblast natively picks it up
+export SLURP_ARGS="-d -b 000000CC -c b4befeff -w 2"
+
+# 2. Setup temp file
 TEMP_FILE="/tmp/screenshot_$(date +%s).png"
-pkill -x wayfreeze
 
-# 2. The Capture
-# We run grim and slurp INSIDE still.
-# We don't pipe to swappy here so 'still' can exit immediately after capture.
-wayfreeze &
-grim -g "$(
-  slurp -d -b 1e1e2e80 -c b4befeff -w 2
-  sleep .3
-)" $TEMP_FILE
-pkill -x wayfreeze
+# 3. The Capture & Failsafe
+# grimblast returns 0 if successful, or aborts if you press Escape
+if grimblast --freeze save area "$TEMP_FILE"; then
 
-# 3. The Escape/Failsafe Check
-# If the file doesn't exist (because you hit Escape), or is empty, we just quit.
-if [ ! -s "$TEMP_FILE" ]; then
+  # Open in swappy, and pipe the saved output to clipboard
+  swappy -f "$TEMP_FILE" -o - | wl-copy
+
+  # Clean up after swappy closes
   rm -f "$TEMP_FILE"
-  pkill -x wayfreeze # Extra safety to ensure screen is unfrozen
-  exit 0
+else
+  # You pressed Escape or it failed, just clean up
+  rm -f "$TEMP_FILE"
 fi
-
-# 4. The Editor
-# Now that 'still' has finished and the screen is unfrozen, open the editor.
-swappy -f "$TEMP_FILE" -o - | wl-copy
-
-# 5. Final Cleanup
-rm "$TEMP_FILE"
