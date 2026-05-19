@@ -1,0 +1,55 @@
+-- =====================================================================
+-- Per-host Hyprland Configuration Template (Hyprland 0.55+ Lua API)
+-- =====================================================================
+-- This file is sourced FIRST by the root hyprland.lua, before any of
+-- the tracked modules. Use it for anything that differs between hosts:
+--
+--  - Monitor outputs and layout positioning properties
+--  - Core Workspace rule assignments and ranges
+--  - GPU Environment Envs (LIBVA_DRIVER_NAME, VDPAU_DRIVER, etc.)
+--  - Autostart application execution stacks
+-- =====================================================================
+
+-- -----------------------------------------------------------------------------
+-- 1. Monitor Setup Variables & Workspace Pinning Loop Ranges
+-- -----------------------------------------------------------------------------
+monitor1 = ",preferred,auto,auto"
+-- monitor2 = "HDMI-A-1"
+
+hl.monitor({ output = monitor1, mode = "preferred", position = "auto", scale = 1 })
+-- hl.monitor({ output = monitor2, mode = "preferred", position = "auto", scale = 1 })
+
+-- Pin ranges directly to your hardware assets (Workspaces 1-10 on primary)
+for w = 1, 10 do
+    hl.workspace_rule({ workspace = tostring(w), monitor = monitor1 })
+end
+
+-- if monitor2 then
+--     for w = 11, 20 do
+--         hl.workspace_rule({ workspace = tostring(w), monitor = monitor2 })
+--     end
+-- end
+
+-- -----------------------------------------------------------------------------
+-- 2. GPU / Hardware Environment Drivers Configuration
+-- -----------------------------------------------------------------------------
+-- AMD: radeonsi | Intel: iHD | Nvidia: nvidia
+-- hl.env("LIBVA_DRIVER_NAME", "radeonsi")
+-- hl.env("VDPAU_DRIVER", "radeonsi")
+
+-- -----------------------------------------------------------------------------
+-- 3. Dedicated Host Autostarts Hook Window Layer
+-- -----------------------------------------------------------------------------
+hl.on("hyprland.start", function()
+    -- local lock_wait = "~/.config/hypr/scripts/lock-wait.sh"
+    -- hl.exec_cmd("sleep 8 && flatpak run com.discordapp.Discord --start-minimized")
+end)
+
+-- -----------------------------------------------------------------------------
+-- 4. Miscellaneous Variable Overrides
+-- -----------------------------------------------------------------------------
+hl.config({
+    misc = {
+        vrr = 1 -- Variable Refresh Rate tuning configuration option
+    }
+})
