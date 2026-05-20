@@ -31,8 +31,8 @@ output_path = '~/.config/rofi/rounded-nord-dark-larke.rasi'
 
 
 [templates.hyprland]
-input_path = '~/.config/matugen/templates/hyprland-theme.conf'
-output_path = '~/.config/hypr/hyprland/theme.conf'
+input_path = '~/.config/matugen/templates/hyprland-theme.lua'
+output_path = '~/.config/hypr/hyprland/theme.lua'
 
 
 [templates.hyprlock]

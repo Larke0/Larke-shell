@@ -25,7 +25,7 @@ hl.bind("SUPER + V", hl.dsp.exec_cmd("cliphist list | rofi -dmenu | cliphist dec
 hl.bind("SUPER + SHIFT + S", hl.dsp.exec_cmd("~/.config/hypr/scripts/screenshot.sh"))
 
 -- Dynamic Application Menu (Triggers on left Super key release)
-hl.bind("SUPER + SUPER_L", hl.dsp.exec_cmd(menu), { release = true })
+hl.bind("SUPER + SUPER_L", hl.dsp.exec_cmd(toggle_scroll .. " on; " .. menu), { release = true })
 
 -- 2. Focus & Window Management (Spelled out directions)
 hl.bind("SUPER + left", hl.dsp.focus({ direction = "left" }))
