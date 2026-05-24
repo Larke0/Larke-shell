@@ -1,0 +1,19 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sumneko/vscode-lua/master/setting/schema.json",
+  "runtime": {
+    "version": "LuaJIT"
+  },
+  "diagnostics": {
+    "globals": [
+      "hl",
+      "monitor1",
+      "monitor2"
+    ]
+  },
+  "workspace": {
+    "checkThirdParty": false,
+    "library": [
+      "/usr/share/hypr/stubs"
+    ]
+  }
+}

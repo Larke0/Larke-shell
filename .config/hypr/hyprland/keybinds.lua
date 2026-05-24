@@ -1,7 +1,9 @@
--- ~/Larke-shell/.config/hypr/hyprland/keybinds.lua
--- Corrected for Hyprland 0.55+ (Completely Removed Hyprsplit)
+-- ~/.config/hypr/hyprland/keybinds.lua
+-- Corrected for Hyprland 0.55+
 
+-- -----------------------------------------------------------------------------
 -- Local Path & Variable Definitions
+-- -----------------------------------------------------------------------------
 local terminal         = "kitty"
 local fileManager      = "nautilus --new-window"
 local menu             = "rofi -show combi -modes combi -combi-modes 'drun,calc'"
@@ -9,8 +11,11 @@ local browser          = "helium"
 local toggle_scroll    = "~/.config/hypr/scripts/toggle_scroll.sh"
 local monitor_empty_ws = "~/.config/hypr/scripts/monitor_empty_ws.sh"
 local monitor_ws       = "~/.config/hypr/scripts/monitor_ws.sh"
+local close_special    = "~/.config/hypr/scripts/close_special.sh"
 
--- 1. Core App Launchers (Fixed variable expansions)
+-- -----------------------------------------------------------------------------
+-- 1. Core App Launchers & System Actions
+-- -----------------------------------------------------------------------------
 hl.bind("SUPER + T", hl.dsp.exec_cmd(terminal))
 hl.bind("SUPER + W", hl.dsp.exec_cmd(browser))
 hl.bind("SUPER + E", hl.dsp.exec_cmd(fileManager))
@@ -27,78 +32,101 @@ hl.bind("SUPER + SHIFT + S", hl.dsp.exec_cmd("~/.config/hypr/scripts/screenshot.
 -- Dynamic Application Menu (Triggers on left Super key release)
 hl.bind("SUPER + SUPER_L", hl.dsp.exec_cmd(toggle_scroll .. " on; " .. menu), { release = true })
 
--- 2. Focus & Window Management (Spelled out directions)
-hl.bind("SUPER + left", hl.dsp.focus({ direction = "left" }))
-hl.bind("SUPER + right", hl.dsp.focus({ direction = "right" }))
-hl.bind("SUPER + up", hl.dsp.focus({ direction = "up" }))
-hl.bind("SUPER + down", hl.dsp.focus({ direction = "down" }))
+-- Scroll Sensitivity Mod Flags
+hl.bind("SUPER_L", hl.dsp.exec_cmd(toggle_scroll .. " off"), { non_blocking = true, locked = true, transparent = true })
+hl.bind("SUPER_L", hl.dsp.exec_cmd(toggle_scroll .. " on"),
+  { release = true, non_blocking = true, locked = true, transparent = true })
 
-hl.bind("SUPER + ALT + left", hl.dsp.window.move({ direction = "left" }))
-hl.bind("SUPER + ALT + right", hl.dsp.window.move({ direction = "right" }))
-hl.bind("SUPER + ALT + up", hl.dsp.window.move({ direction = "up" }))
-hl.bind("SUPER + ALT + down", hl.dsp.window.move({ direction = "down" }))
+-- -----------------------------------------------------------------------------
+-- 2. Directional Matrix (Focus, Move, Resize)
+-- -----------------------------------------------------------------------------
+local directions = {
+  left  = { rx = -25, ry = 0 },
+  right = { rx = 25, ry = 0 },
+  up    = { rx = 0, ry = -25 },
+  down  = { rx = 0, ry = 25 }
+}
 
-hl.bind("SUPER + SHIFT + left", hl.dsp.window.resize({ x = -25, y = 0, relative = true }))
-hl.bind("SUPER + SHIFT + right", hl.dsp.window.resize({ x = 25, y = 0, relative = true }))
-hl.bind("SUPER + SHIFT + up", hl.dsp.window.resize({ x = 0, y = -25, relative = true }))
-hl.bind("SUPER + SHIFT + down", hl.dsp.window.resize({ x = 0, y = 25, relative = true }))
+for dir, res in pairs(directions) do
+  hl.bind("SUPER + " .. dir, hl.dsp.focus({ direction = dir }))
+  hl.bind("SUPER + ALT + " .. dir, hl.dsp.window.move({ direction = dir }))
+  hl.bind("SUPER + SHIFT + " .. dir, hl.dsp.window.resize({ x = res.rx, y = res.ry, relative = true }))
+end
 
 -- Window Layout States
 hl.bind("SUPER + ALT + F", hl.dsp.window.float({ action = "toggle" }))
 hl.bind("SUPER + F", hl.dsp.window.fullscreen({ mode = "maximized", action = "toggle" }))
 hl.bind("SUPER + SHIFT + F", hl.dsp.window.fullscreen({ mode = "fullscreen", action = "toggle" }))
 
--- 3. Interactive Mouse Drag Binds (Fixed dispatchers)
+-- Interactive Mouse Drag Binds
 hl.bind("SUPER + mouse:272", hl.dsp.window.drag(), { mouse = true })
 hl.bind("SUPER + mouse:273", hl.dsp.window.resize(), { mouse = true })
 
--- 4. Special Workspaces Toggles
-hl.bind("SUPER + P", hl.dsp.workspace.toggle_special("Whatsapp"))
-hl.bind("SUPER + D", hl.dsp.workspace.toggle_special("discord"))
-hl.bind("SUPER + S", hl.dsp.workspace.toggle_special("spotify"))
-hl.bind("SUPER + M", hl.dsp.workspace.toggle_special("mixer"))
+-- -----------------------------------------------------------------------------
+-- 3. Special Workspaces
+-- -----------------------------------------------------------------------------
+local special_workspaces = {
+  P = "Whatsapp",
+  D = "discord",
+  S = "spotify",
+  m = "mixer"
+}
 
--- 5. Audio Controls & System Hardware Keys
-hl.bind("XF86AudioRaiseVolume",
-  hl.dsp.exec_cmd("wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 5%+ && touch /tmp/qs-vol-trigger"), { repeating = true })
-hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%- && touch /tmp/qs-vol-trigger"),
-  { repeating = true })
-hl.bind("XF86AudioMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle && touch /tmp/qs-vol-trigger"))
+for key, name in pairs(special_workspaces) do
+  hl.bind("SUPER + " .. key, hl.dsp.workspace.toggle_special(name))
+end
 
-hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"),
-  { repeating = true, locked = true })
-hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%+"), { repeating = true, locked = true })
-hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%-"), { repeating = true, locked = true })
+-- Minimize any open special workspace
+hl.bind("SUPER + A", hl.dsp.exec_cmd(close_special))
 
-hl.bind("XF86AudioNext", hl.dsp.exec_cmd("playerctl next"), { locked = true })
-hl.bind("XF86AudioPause", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
-hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
-hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true })
+-- -----------------------------------------------------------------------------
+-- 4. Monitor Workspace Navigation & Mouse-Wheel Hooks
+-- -----------------------------------------------------------------------------
+local wheel_nav = {
+  down = { val = "-1", key = "left" },
+  up   = { val = "+1", key = "right" }
+}
 
--- 6. Monitor Workspace Navigations & Mouse-Wheel Hooks
-hl.bind("SUPER + SHIFT + mouse_down", hl.dsp.focus({ workspace = "m-1" }))
-hl.bind("SUPER + SHIFT + mouse_up", hl.dsp.focus({ workspace = "m+1" }))
-
-hl.bind("SUPER + mouse_down", hl.dsp.exec_cmd(monitor_ws .. " workspace -1"))
-hl.bind("SUPER + mouse_up", hl.dsp.exec_cmd(monitor_ws .. " workspace +1"))
-hl.bind("SUPER + ALT + mouse_down", hl.dsp.exec_cmd(monitor_ws .. " movetoworkspace -1"))
-hl.bind("SUPER + ALT + mouse_up", hl.dsp.exec_cmd(monitor_ws .. " movetoworkspace +1"))
-
-hl.bind("SUPER + CTRL + left", hl.dsp.exec_cmd(monitor_ws .. " workspace -1"))
-hl.bind("SUPER + CTRL + right", hl.dsp.exec_cmd(monitor_ws .. " workspace +1"))
+for dir, nav in pairs(wheel_nav) do
+  -- Mouse wheel binds
+  hl.bind("SUPER + SHIFT + mouse_" .. dir, hl.dsp.focus({ workspace = "m" .. nav.val }))
+  hl.bind("SUPER + mouse_" .. dir, hl.dsp.exec_cmd(monitor_ws .. " workspace " .. nav.val))
+  hl.bind("SUPER + ALT + mouse_" .. dir, hl.dsp.exec_cmd(monitor_ws .. " movetoworkspace " .. nav.val))
+  -- Keyboard equivalents
+  hl.bind("SUPER + CTRL + " .. nav.key, hl.dsp.exec_cmd(monitor_ws .. " workspace " .. nav.val))
+end
 
 hl.bind("SUPER + X", hl.dsp.exec_cmd(monitor_empty_ws))
 hl.bind("SUPER + ALT + X", hl.dsp.exec_cmd(monitor_empty_ws .. " move"))
 
--- 7. Workspace Loops Arrays (1-10)
-for i = 1, 9 do
-  hl.bind("SUPER + " .. i, hl.dsp.exec_cmd(monitor_ws .. " workspace " .. i))
-  hl.bind("SUPER + ALT + " .. i, hl.dsp.exec_cmd(monitor_ws .. " movetoworkspace " .. i))
-end
-hl.bind("SUPER + 0", hl.dsp.exec_cmd(monitor_ws .. " workspace 10"))
-hl.bind("SUPER + ALT + 0", hl.dsp.exec_cmd(monitor_ws .. " movetoworkspace 10"))
+-- -----------------------------------------------------------------------------
+-- 5. Numeric Workspace Loops (1-10)
+-- -----------------------------------------------------------------------------
+for i = 1, 10 do
+  -- Maps 10 to the '0' key for ergonomic standard layout
+  local key = (i == 10) and "0" or tostring(i)
 
--- 8. Scroll Sensitivity Mod Flags
-hl.bind("SUPER_L", hl.dsp.exec_cmd(toggle_scroll .. " off"), { non_blocking = true, locked = true, transparent = true })
-hl.bind("SUPER_L", hl.dsp.exec_cmd(toggle_scroll .. " on"),
-  { release = true, non_blocking = true, locked = true, transparent = true })
+  hl.bind("SUPER + " .. key, hl.dsp.exec_cmd(monitor_ws .. " workspace " .. i))
+  hl.bind("SUPER + ALT + " .. key, hl.dsp.exec_cmd(monitor_ws .. " movetoworkspace " .. i))
+end
+
+-- -----------------------------------------------------------------------------
+-- 6. Audio Controls & System Hardware Keys
+-- -----------------------------------------------------------------------------
+local hardware_keys = {
+  { key = "XF86AudioRaiseVolume",  cmd = "wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 5%+ && touch /tmp/qs-vol-trigger", opts = { repeating = true } },
+  { key = "XF86AudioLowerVolume",  cmd = "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%- && touch /tmp/qs-vol-trigger",        opts = { repeating = true } },
+  { key = "XF86AudioMute",         cmd = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle && touch /tmp/qs-vol-trigger",       opts = {} },
+  { key = "XF86AudioMicMute",      cmd = "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle",                                  opts = { repeating = true, locked = true } },
+  { key = "XF86MonBrightnessUp",   cmd = "brightnessctl -e4 -n2 set 5%+",                                                 opts = { repeating = true, locked = true } },
+  { key = "XF86MonBrightnessDown", cmd = "brightnessctl -e4 -n2 set 5%-",                                                 opts = { repeating = true, locked = true } },
+  { key = "XF86AudioNext",         cmd = "playerctl next",                                                                opts = { locked = true } },
+  { key = "XF86AudioPause",        cmd = "playerctl play-pause",                                                          opts = { locked = true } },
+  { key = "XF86AudioPlay",         cmd = "playerctl play-pause",                                                          opts = { locked = true } },
+  { key = "XF86AudioPrev",         cmd = "playerctl previous",                                                            opts = { locked = true } }
+}
+
+for _, hw in ipairs(hardware_keys) do
+  -- Falls back to an empty table {} if opts are not specified
+  hl.bind(hw.key, hl.dsp.exec_cmd(hw.cmd), hw.opts or {})
+end
