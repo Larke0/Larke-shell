@@ -24,7 +24,6 @@ Image {
         anchors.fill: parent
         hoverEnabled: true
         onClicked: {
-           // quickMenu.toggle()
            quickMenu.open()
         }
     }
@@ -33,6 +32,7 @@ Image {
     	id: quickMenu
     	anchorWindow: rootTopBar
 
-    	visible: false
+    	visible: true
     }
+    
 }

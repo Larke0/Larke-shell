@@ -7,154 +7,276 @@ import Quickshell.Hyprland
 import Quickshell.Io
 import "../../theme"
 
+// =============================================================================
+// MainMenu — Slide-in panel anchored to the top-left of the screen.
+// =============================================================================
 PanelWindow {
-  id: rootMainMenu
-  required property var anchorWindow
+    id: rootMainMenu
+    required property var anchorWindow
 
-  Process {
-      id: wpctlSetter
-      command: ["wpctl", "set-default"]
-  }
+    // -------------------------------------------------------------------------
+    // Config — All magic numbers live here. Edit this block to restyle the menu.
+    // -------------------------------------------------------------------------
+    QtObject {
+        id: cfg
 
-  // Global State
-  property var audioDeviceNames: []
-  property var audioDeviceMap: ({})
-  property string currentDefaultSink: ""
+        // Panel dimensions
+        readonly property int panelWidth:  330
+        readonly property int visibleWidth: panelWidth - notchDepth
+        readonly property int panelHeight: 1050
+
+        // Notch / cutout on the right edge of the background shape
+        readonly property int notchDepth:  20
+        readonly property int notchRadius: 10
+
+        // Inner content column: narrower than the panel to clear the notch
+        readonly property int contentWidth:   300
+        readonly property int contentMargin:  10
+
+        // Slide animation
+        readonly property int slideOffsetX:    -310
+        readonly property int slideDuration:    400
+
+        // Focus-grab delay after open (ms) — prevents accidental immediate close
+        readonly property int focusDelay:       200
+
+        // Auto-close countdown when mouse leaves (ms)
+        readonly property int autoCloseDelay: 10000
+
+        // Spacing between major layout sections
+        readonly property int sectionSpacing: 10
+
+        // Divider bar
+        readonly property int dividerHeight: 5
+        readonly property int dividerRadius: 10
+
+        // SysButton defaults
+        readonly property int   sysBtnWidth:    80
+        readonly property int   sysBtnHeight:   50
+        readonly property int   sysBtnRadius:  100
+        readonly property int   sysBtnFontSize: 40
+
+        // Small reload button (top-left corner of the menu)
+        readonly property int   reloadBtnSize:      30
+        readonly property int   reloadBtnFontSize:  10
+
+        // Lock icon is slightly smaller than the other sys buttons
+        readonly property int   lockBtnFontSize: 33
+
+        // QuickToggle defaults
+        readonly property int   toggleWidth:    120
+        readonly property int   toggleHeight:    60
+        readonly property int   toggleRadius:   100
+        readonly property int   toggleFontSize:  33
+
+        // ListSelector defaults
+        readonly property int   selectorHeight:   50
+        readonly property int   selectorSpacing:   5
+        readonly property int   selectorRadius:   20
+        readonly property int   selectorFontSize: 16
+        readonly property int   selectorIconSize: 26
+        readonly property int   selectorAnimMs:  300
+
+        // Row spacing inside system-button row and toggle row
+        readonly property int sysRowSpacing:    15
+        readonly property int toggleRowSpacing: 10
+
+        // Animated GIF
+        readonly property int gifSize:        250
+        readonly property int gifLeftMargin:   27
+
+        // Nerd Font used for icons throughout the panel
+        readonly property string nerdFont: "JetBrainsMono Nerd Font Propo"
+    }
 
 
-  property real cornerRadius: 25
-  property real safeWidth: Math.max(rootMainMenu.width, rootMainMenu.implicitWidth)
-  property real safeHeight: Math.max(rootMainMenu.height, rootMainMenu.implicitHeight)
+    // -------------------------------------------------------------------------
+    // Panel geometry & base appearance
+    // -------------------------------------------------------------------------
+    anchors.top:  true
+    anchors.left: true
+    implicitWidth:  cfg.panelWidth
+    implicitHeight: cfg.panelHeight
+    color:   "transparent"
+    visible: true
 
+
+    // -------------------------------------------------------------------------
+    // Panel open/close state
+    // -------------------------------------------------------------------------
+    property bool isOpen: false
+
+    function open() {
+        isOpen = true
+    }
+
+    function close() {
+        isOpen = false
+    }
+
+    function toggle() {
+        if (isOpen) close()
+        else        open()
+    }
+
+    onIsOpenChanged: {
+        if (isOpen) {
+            pwDumper.running = true
+            focusTimer.start()
+        } else {
+            pwDumper.running = false
+            focusTimer.stop()
+            rootMainMenu.focusActive = false
+        }
+    }
+
+    property bool focusActive: false
+
+
+    // -------------------------------------------------------------------------
+    // Audio state
+    // -------------------------------------------------------------------------
+    property var    audioDeviceNames:  []
+    property var    audioDeviceMap:    ({})
+    property string currentDefaultSink: ""
+
+
+    // -------------------------------------------------------------------------
+    // Processes
+    // -------------------------------------------------------------------------
+
+    // Runs an arbitrary shell command (used by SysButton)
     Process {
         id: powerAction
-        // We use 'sh -c' so we can pass any full command string
-        command: ["sh", "-c", "true"] 
+        command: ["sh", "-c", "true"]
     }
-  
-  Process {
-      id: pwDumper
-      command: ["pw-dump"]
-      
-      stdout: StdioCollector {
-          onStreamFinished: {
-              let output = this.text.trim();
-              if (output.length === 0) return;
-  
-              try {
-                  let data = JSON.parse(output);
-                  let names = [];
-                  let mapping = {};
-                  let defaultNodeName = ""; 
-  
-                  // 1. Find the metadata object (Targeting the system name like "alsa_output...")
-                  let metadata = data.find(obj => obj.type === "PipeWire:Interface:Metadata" && obj.props && obj.props["metadata.name"] === "default");
-                  
-                  if (metadata && metadata.metadata) {
-                       let defaultEntry = metadata.metadata.find(m => m.key === "default.audio.sink");
-                       if (defaultEntry && defaultEntry.value && defaultEntry.value.name) {
-                           defaultNodeName = defaultEntry.value.name;
-                       }
-                  }
-  
-                  // 2. Filter for Audio Sinks
-                  let sinks = data.filter(obj => 
-                      obj.info && 
-                      obj.info.props && 
-                      obj.info.props["media.class"] === "Audio/Sink"
-                  );
-  
-                  sinks.forEach(sink => {
-                      let id = sink.id;
-                      let description = sink.info.props["node.description"] || "Unknown Device";
-                      let systemName = sink.info.props["node.name"];
-                      
-                      names.push(description);
-                      mapping[description] = id;
-  
-                      // Match the system name to find our "friendly" default
-                      if (systemName === defaultNodeName) {
-                          rootMainMenu.currentDefaultSink = description;
-                      }
-                  });
-  
-                  // --- NEW: Print Final Results to Console ---
-                  console.log("---------------------------------")
-                  console.log("ACTIVE DEFAULT:", rootMainMenu.currentDefaultSink)
-                  console.log("ALL DEVICES:", JSON.stringify(names))
-                  console.log("---------------------------------")
-  
-                  // 3. Update Global Properties
-                  if (names.length > 0) {
-                      rootMainMenu.audioDeviceNames = [...names];
-                      rootMainMenu.audioDeviceMap = mapping;
-                  }
-  
-              } catch (e) {
-                  console.error("Error parsing pw-dump JSON:", e);
-              }
-          }
-      }
-  }
-  
-  // Trigger refresh when menu opens
-  onIsOpenChanged: {
-      if (isOpen) {
-          pwDumper.running = true
-          // Start the delay timer
-          focusTimer.start()
-      } else {
-          pwDumper.running = false
-          // specific cleanup
-          focusTimer.stop()
-          rootMainMenu.focusActive = false
-      }
-  }
 
-  anchors.top: true
-  anchors.left: true
-  implicitWidth: 320
-  implicitHeight: 1050
-  color: "transparent"
-  visible: true
+    // Sets the default PipeWire sink by numeric ID
+    Process {
+        id: wpctlSetter
+        command: ["wpctl", "set-default"]
+    }
 
-    
-  property bool isOpen: false
-  function open() {
-      isOpen = true
-  }
+    // Queries PipeWire for all audio sinks and finds the current default
+    Process {
+        id: pwDumper
+        command: ["pw-dump"]
 
-  function close() {
-      //visible = false
-      isOpen = false
-  }
+        stdout: StdioCollector {
+            onStreamFinished: {
+                let output = this.text.trim()
+                if (output.length === 0) return
 
-  function toggle() {
-      if (isOpen) close()
-      else open()
-  }
+                try {
+                    let data = JSON.parse(output)
+                    let names   = []
+                    let mapping = {}
+                    let defaultNodeName = ""
 
+                    // Locate the metadata object that records the default sink
+                    let metadata = data.find(obj =>
+                        obj.type === "PipeWire:Interface:Metadata" &&
+                        obj.props &&
+                        obj.props["metadata.name"] === "default"
+                    )
+
+                    if (metadata?.metadata) {
+                        let entry = metadata.metadata.find(m => m.key === "default.audio.sink")
+                        if (entry?.value?.name) {
+                            defaultNodeName = entry.value.name
+                        }
+                    }
+
+                    // Collect all Audio/Sink nodes
+                    data.filter(obj =>
+                        obj.info?.props?.["media.class"] === "Audio/Sink"
+                    ).forEach(sink => {
+                        let description = sink.info.props["node.description"] || "Unknown Device"
+                        let systemName  = sink.info.props["node.name"]
+
+                        names.push(description)
+                        mapping[description] = sink.id
+
+                        if (systemName === defaultNodeName) {
+                            rootMainMenu.currentDefaultSink = description
+                        }
+                    })
+
+                    console.log("---------------------------------")
+                    console.log("ACTIVE DEFAULT:", rootMainMenu.currentDefaultSink)
+                    console.log("ALL DEVICES:",    JSON.stringify(names))
+                    console.log("---------------------------------")
+
+                    if (names.length > 0) {
+                        rootMainMenu.audioDeviceNames = [...names]
+                        rootMainMenu.audioDeviceMap   = mapping
+                    }
+
+                } catch (e) {
+                    console.error("Error parsing pw-dump JSON:", e)
+                }
+            }
+        }
+    }
+
+
+    // -------------------------------------------------------------------------
+    // Timers
+    // -------------------------------------------------------------------------
+
+    // Delays focus-grab so the panel doesn't close the moment it opens
+    Timer {
+        id: focusTimer
+        interval: cfg.focusDelay
+        repeat:   false
+        onTriggered: {
+            if (rootMainMenu.isOpen) rootMainMenu.focusActive = true
+        }
+    }
+
+    // Auto-closes the panel when the mouse leaves
+    Timer {
+        id: closeTimer
+        interval: cfg.autoCloseDelay
+        repeat:   false
+        onTriggered: rootMainMenu.close()
+    }
+
+
+    // -------------------------------------------------------------------------
+    // Focus grab — closes the panel when the user clicks outside it
+    // -------------------------------------------------------------------------
+    HyprlandFocusGrab {
+        windows: [rootMainMenu]
+        active:  rootMainMenu.focusActive
+        onCleared: rootMainMenu.close()
+    }
+
+
+    // =========================================================================
+    // Reusable components
+    // =========================================================================
+
+    // A rounded button that runs a shell command on click
     component SysButton: Rectangle {
         id: btn
-        property string name: "Action"
-        property string cmd: ""
-        property string baseColor: Theme.empty
-        property string hoverColor:  Theme.accent
-        
-        property int btnWidth: 80
-        property int btnHeight: 50
 
-        property var font
-        property var font_size
-    
-        Layout.preferredWidth: btnWidth
+        property string name:       "Action"
+        property string cmd:        ""
+        property string baseColor:  Theme.empty
+        property string hoverColor: Theme.accent
+        property string fontFamily: cfg.nerdFont
+        property int    fontSize:   cfg.sysBtnFontSize
+        property int    btnWidth:   cfg.sysBtnWidth
+        property int    btnHeight:  cfg.sysBtnHeight
+
+        Layout.preferredWidth:  btnWidth
         Layout.preferredHeight: btnHeight
-        radius: 100
-        color: mouse.containsMouse ? btn.hoverColor : btn.baseColor
-    
-        // Smooth color change
+        radius: cfg.sysBtnRadius
+        color:  mouse.containsMouse ? btn.hoverColor : btn.baseColor
+
         Behavior on color { ColorAnimation { duration: 150 } }
-    
+
         MouseArea {
             id: mouse
             anchors.fill: parent
@@ -166,172 +288,167 @@ PanelWindow {
                 rootMainMenu.close()
             }
         }
-    
+
         Text {
             anchors.centerIn: parent
-            text: btn.name
-            color: mouse.containsMouse ? "#1e1e2e" : "white"
-            font.bold: true
-            font.family: btn.font
-            font.pixelSize: btn.font_size
+            text:             btn.name
+            color:            mouse.containsMouse ? "#1e1e2e" : "white"
+            font.bold:        true
+            font.family:      btn.fontFamily
+            font.pixelSize:   btn.fontSize
         }
-    }    
+    }
 
-  
+
+    // A toggleable pill button (e.g. Wi-Fi, Bluetooth)
     component QuickToggle: Rectangle {
         id: toggle
-        property string name: "Unknown"
-        property bool active: false
-        property var font
-        property int font_size
-        
 
-        // Button sizes
-        Layout.preferredWidth: 120
-        Layout.preferredHeight: 60
-        
-        radius: 100
+        property string name:       "Unknown"
+        property bool   active:     false
+        property string fontFamily: cfg.nerdFont
+        property int    fontSize:   cfg.toggleFontSize
 
-        color: active ? Theme.accent : Theme.empty
+        Layout.preferredWidth:  cfg.toggleWidth
+        Layout.preferredHeight: cfg.toggleHeight
+        radius: cfg.toggleRadius
+        color:  active ? Theme.accent : Theme.empty
 
-        // Smooth color change
         Behavior on color { ColorAnimation { duration: 150 } }
 
-        // Simple click interaction
         MouseArea {
             anchors.fill: parent
             onClicked: toggle.active = !toggle.active
         }
 
-        // Icon / Label
-        ColumnLayout {
+        Text {
             anchors.centerIn: parent
-            spacing: 2
-            
-            Text {
-                text: toggle.name
-                color: toggle.active ? "black" : "white"
-                font.bold: true
-                Layout.alignment: Qt.AlignHCenter
-                font.family: toggle.font
-                font.pixelSize: toggle.font_size
-            }
-        }      
+            text:           toggle.name
+            color:          toggle.active ? "black" : "white"
+            font.bold:      true
+            font.family:    toggle.fontFamily
+            font.pixelSize: toggle.fontSize
+        }
     }
 
 
+    // A dropdown-style list selector with animated expand/collapse
     component ListSelector: ColumnLayout {
         id: selector
-        property string name: "Select Option"
-        property var option: ["Option 1", "Option 2", "Option 3"]
-        property string selected: option[0]
-        property bool expanded: false
-        property int buttons_height: 50
-        property int buttons_spacing: 5
-        property int font_size: 14
-        property int font_size_name: selector.font_size
-        property int animation_duration: 300 
-        
-        signal itemSelected(string item)
-        
-        spacing: buttons_spacing
-        implicitWidth: 280
-        
-        // --- 1. Main Button (Header) ---
-        Rectangle {
-            Layout.fillWidth: true // Fill the width of the component
-            height: selector.buttons_height
-            radius: 20
-            color: Theme.secondary_accent
 
-            RowLayout{
-                anchors.fill: parent
-                anchors.leftMargin: 15
-                anchors.rightMargin: 15
+        property string name:        "Select Option"
+        property var    option:      ["Option 1", "Option 2", "Option 3"]
+        property string selected:    option[0]
+        property bool   expanded:    false
+
+        property int buttonHeight:   cfg.selectorHeight
+        property int buttonSpacing:  cfg.selectorSpacing
+        property int fontSize:       cfg.selectorFontSize
+        property int fontSizeName:   cfg.selectorIconSize
+        property int animDuration:   cfg.selectorAnimMs
+
+        signal itemSelected(string item)
+
+        spacing:       buttonSpacing
+        implicitWidth: cfg.contentWidth
+
+        // Header / trigger row
+        Rectangle {
+            Layout.fillWidth: true
+            height: selector.buttonHeight
+            radius: cfg.selectorRadius
+            color:  Theme.secondary_accent
+
+            RowLayout {
+                anchors {
+                    fill:         parent
+                    leftMargin:   15
+                    rightMargin:  15
+                }
                 spacing: 5
+
                 Text {
-                    id: textName          
-                    text: selector.name
-                    color: "white"
-                    font.bold: true
-                    font.pixelSize: selector.font_size_name
-                    elide: Text.ElideRight
+                    text:           selector.name
+                    color:          "white"
+                    font.bold:      true
+                    font.pixelSize: selector.fontSizeName
+                    elide:          Text.ElideRight
                 }
 
                 Text {
-                    
-                    id: textSelected
-                    text: selector.selected
-                    color: "white"
-                    font.bold: true
-                    font.pixelSize: selector.font_size
-                    elide: Text.ElideRight
+                    text:           selector.selected
+                    color:          "white"
+                    font.bold:      true
+                    font.pixelSize: selector.fontSize
+                    elide:          Text.ElideRight
                     Layout.fillWidth: true
                 }
 
                 Text {
-                    id: arrowText
-                    text: selector.expanded ? "▲" : "▼"
-                    color: "gray"
-                    font.pixelSize: selector.font_size
+                    text:           selector.expanded ? "▲" : "▼"
+                    color:          "gray"
+                    font.pixelSize: selector.fontSize
                 }
             }
 
             MouseArea {
                 anchors.fill: parent
-                onClicked: selector.expanded = !selector.expanded
+                onClicked:    selector.expanded = !selector.expanded
             }
         }
 
-        // --- 2. Expandable List Container ---
+        // Animated container that reveals the option list
         Rectangle {
             id: listContainer
             Layout.fillWidth: true
-            clip: true 
+            clip:  true
             color: "transparent"
-            Layout.preferredHeight: height
-            height: selector.expanded ? (selector.option.length * (selector.buttons_height + selector.buttons_spacing)) : 0
+
+            height: selector.expanded
+                    ? selector.option.length * (selector.buttonHeight + selector.buttonSpacing)
+                    : 0
 
             Behavior on height {
                 NumberAnimation {
-                    duration: selector.animation_duration
+                    duration:    selector.animDuration
                     easing.type: Easing.OutCubic
                 }
             }
 
             ColumnLayout {
-                width: parent.width // Match the container width exactly
-                spacing: selector.buttons_spacing
+                width:   parent.width
+                spacing: selector.buttonSpacing
 
                 Repeater {
                     model: selector.option
+
                     delegate: Rectangle {
-                        Layout.fillWidth: true 
-                        
-                        height: selector.buttons_height
-                        radius: 20
-                        color: modelData === selector.selected ? Theme.accent : Theme.empty
+                        Layout.fillWidth: true
+                        height: selector.buttonHeight
+                        radius: cfg.selectorRadius
+                        color:  modelData === selector.selected ? Theme.accent : Theme.empty
 
                         Text {
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            anchors.leftMargin: 20
-                            anchors.rightMargin: 20 
-
-                            text: modelData
-                            color: modelData === selector.selected ? Theme.empty : Theme.accent
-                            font.pixelSize: selector.font_size
-                            font.bold: true
-                            elide: Text.ElideRight
+                            anchors {
+                                verticalCenter: parent.verticalCenter
+                                left:           parent.left
+                                right:          parent.right
+                                leftMargin:     20
+                                rightMargin:    20
+                            }
+                            text:           modelData
+                            color:          modelData === selector.selected ? Theme.empty : Theme.accent
+                            font.pixelSize: selector.fontSize
+                            font.bold:      true
+                            elide:          Text.ElideRight
                         }
 
                         MouseArea {
                             anchors.fill: parent
                             onClicked: {
-                                selector.selected = modelData;
-                                selector.expanded = false;
-                                selector.itemSelected(modelData);
+                                selector.selected = modelData
+                                selector.expanded = false
+                                selector.itemSelected(modelData)
                             }
                         }
                     }
@@ -340,286 +457,216 @@ PanelWindow {
         }
     }
 
-
+    // Placeholder — implement slider controls here when needed
     component ListSlider: ColumnLayout {
         id: listSlider
     }
 
-    property bool focusActive: false
-    
-    Timer {
-        id: focusTimer
-        interval: 200 // Wait 200ms before grabbing focus
-        repeat: false
-        onTriggered: {
-            if (rootMainMenu.isOpen) {
-                rootMainMenu.focusActive = true
+
+    // =========================================================================
+    // Visual content — the panel background shape + all UI elements
+    // =========================================================================
+    Shape {
+        id: bgShape
+        anchors.fill: parent
+        layer.enabled: true
+        layer.samples: 4
+
+        // Live dimensions (guard against zero during startup)
+        property real safeW: Math.max(rootMainMenu.width,  cfg.panelWidth)
+        property real safeH: Math.max(rootMainMenu.height, cfg.panelHeight)
+
+        // Right-edge cutout that visually separates the panel from the screen edge
+        property real notchDepth:  cfg.notchDepth
+        property real notchRadius: cfg.notchRadius
+
+        ShapePath {
+            fillColor:   Theme.background
+            strokeColor: "transparent"
+
+            startX: 0; startY: 0
+
+            // Top edge →
+            PathLine { x: bgShape.safeW; y: 0 }
+
+            // Top-right cutout corner
+            PathQuad {
+                controlX: bgShape.safeW - bgShape.notchDepth; controlY: 0
+                x:        bgShape.safeW - bgShape.notchDepth
+                y:        bgShape.notchRadius
+            }
+
+            // Right inner wall ↓
+            PathLine {
+                x: bgShape.safeW - bgShape.notchDepth
+                y: bgShape.safeH - bgShape.notchRadius
+            }
+
+            // Bottom-right cutout corner
+            PathQuad {
+                controlX: bgShape.safeW - bgShape.notchDepth; controlY: bgShape.safeH
+                x:        bgShape.safeW
+                y:        bgShape.safeH
+            }
+
+            // Bottom edge ←
+            PathLine { x: 0; y: bgShape.safeH }
+
+            // Left edge ↑ (closes the shape)
+            PathLine { x: 0; y: 0 }
+        }
+
+        // Slide transform — starts offscreen to the left, animates to x: 0
+        transform: Translate {
+            id: slidePos
+            x: cfg.slideOffsetX
+        }
+
+        // Mouse-leave auto-close
+        HoverHandler {
+            onHoveredChanged: {
+                if (hovered) closeTimer.stop()
+                else         closeTimer.start()
             }
         }
-    }
 
-
-    HyprlandFocusGrab {
-        windows: [rootMainMenu]
-        active: rootMainMenu.focusActive
-        onCleared: {
-            // Logic: If user clicks outside, close immediately
-            rootMainMenu.close()
+        // Open state slides the panel into view
+        states: State {
+            name: "open"
+            when: rootMainMenu.isOpen
+            PropertyChanges { target: slidePos; x: -cfg.notchDepth }
         }
-    }
 
-    Timer {
-        id: closeTimer
-        interval: 10000 // 10000ms = 1 second
-        repeat: false
-        onTriggered: rootMainMenu.close()
-    }
-
-
-  //Visual Content
-      Shape {
-          id: bgShape
-          anchors.fill: parent
-          layer.enabled: true
-          layer.samples: 4 
-
-          // Safe Wayland dimensions
-          property real safeW: Math.max(rootMainMenu.width, 320)
-          property real safeH: Math.max(rootMainMenu.height, 1050)
-          
-          // Cutout Settings
-          property real notchDepth: 20   // How deep the cutout bites into the left
-          property real notchRadius: 20  // The corner roundness of the cutout
-
-          ShapePath {
-              fillColor: Theme.background
-              strokeColor: "transparent"
-
-              startX: 0
-              startY: 0
-
-              // 1. Top Edge: Draw all the way to the max width
-              PathLine { x: bgShape.safeW; y: 0 }
-
-              // 2. Top-Right Swoop (Starts exactly at y: 0)
-              PathQuad {
-                  // Magnet is placed inside to pull the curve INWARD
-                  controlX: bgShape.safeW - bgShape.notchDepth
-                  controlY: 0
-                  
-                  // Ends down by the radius amount, and inward by the depth amount
-                  x: bgShape.safeW - bgShape.notchDepth
-                  y: bgShape.notchRadius
-              }
-
-              // 3. Inner Right Edge: The flat vertical wall of the cutout
-              PathLine { 
-                  x: bgShape.safeW - bgShape.notchDepth
-                  y: bgShape.safeH - bgShape.notchRadius 
-              }
-
-              // 4. Bottom-Right Swoop (Ends exactly at max height)
-              PathQuad {
-                  // Magnet is placed inside to pull the curve INWARD
-                  controlX: bgShape.safeW - bgShape.notchDepth
-                  controlY: bgShape.safeH
-                  
-                  // Sweeps back out to the max width exactly at the bottom
-                  x: bgShape.safeW
-                  y: bgShape.safeH
-              }
-
-              // 5. Bottom Edge: Draw back to the left wall
-              PathLine { x: 0; y: bgShape.safeH }
-
-              // 6. Left Edge: Close the shape!
-              PathLine { x: 0; y: 0 }
-          }          
-            transform: Translate {
-                id: slidePos
-                x: -310 
+        transitions: [
+            Transition {
+                from: "*"; to: "open"
+                SequentialAnimation {
+                    ScriptAction    { script: rootMainMenu.visible = true }
+                    NumberAnimation {
+                        target:      slidePos
+                        property:    "x"
+                        duration:    cfg.slideDuration
+                        easing.type: Easing.OutCubic
+                    }
+                }
+            },
+            Transition {
+                from: "open"; to: "*"
+                SequentialAnimation {
+                    NumberAnimation {
+                        target:      slidePos
+                        property:    "x"
+                        duration:    cfg.slideDuration
+                        easing.type: Easing.OutCubic
+                    }
+                    ScriptAction { script: rootMainMenu.visible = false }
+                }
             }
-            
-          //  Close on Mouse Exit
-          // This component watches the mouse state for this rectangle
-          HoverHandler {
-              // "hovered" becomes true when mouse enters, false when it leaves
-              onHoveredChanged: {
-                  // If the mouse just left the window, close it
-                  if (hovered) {
-                      closeTimer.stop()
-                  } else {
-                      closeTimer.start()
-                  }
-              }
-          }
+        ]
 
+        // -----------------------------------------------------------------
+        // Content column
+        // -----------------------------------------------------------------
+        ColumnLayout {
+            id: quickMenu
+            spacing: cfg.sectionSpacing
 
-          states: State {
-              name: "open"
-              when: rootMainMenu.isOpen // Trigger when window opens
-              
-              // Move to x: 0 (Normal position) and Opacity: 1 (Visible)
-              PropertyChanges { target: slidePos; x: 0 }
-          }
-          
-            transitions: [
-                Transition {
-                    from: "*"
-                    to: "open"
-                    SequentialAnimation {
-                        ScriptAction {
-                            script: rootMainMenu.visible = true
-                        }
-                        NumberAnimation {
-                            target: slidePos
-                            property: "x"
-                            duration: 400 // Duration in milliseconds
-                            easing.type: Easing.OutCubic // Starts fast, slows down at the end
-                        }
-                    }
-                },
+            anchors {
+                top:              parent.top
+                horizontalCenter: parent.horizontalCenter
+                margins:          cfg.contentMargin
+            }
 
-                Transition {
-                    from: "open"
-                    to: "*"
-                    SequentialAnimation{
-                        NumberAnimation {
-                            target: slidePos
-                            property: "x"
-                            duration: 400 // Duration in milliseconds
-                            easing.type: Easing.OutCubic // Starts fast, slows down at the end
-                        }
-                        ScriptAction {
-                            script: rootMainMenu.visible = false
-                        }
-                    }
-                }
-            ]
+            implicitWidth: cfg.contentWidth
 
-          ColumnLayout{
-            spacing: 10
-            Layout.fillWidth: false
-            width: 300
-              anchors {
-                  top: parent.top
-                  horizontalCenter: parent.horizontalCenter
-                  margins: 10
-                }
+            // Quickshell hot-reload button (small, top of panel)
+            SysButton {
+                name:       "\udb82\udc14"
+                fontFamily: cfg.nerdFont
+                fontSize:   cfg.reloadBtnFontSize
+                btnWidth:   cfg.reloadBtnSize
+                btnHeight:  cfg.reloadBtnSize
+                cmd: "nohup $HOME/.local/bin/quickshell-reload > /dev/null 2>&1 &"
+            }
 
-
-                // Qs Reload Button (Fixed icon, size, and command path)
-                   SysButton {
-                       name: "\udb82\udc14" // Nerd Font Reload/Refresh icon
-                       font: "JetBrainsMono Nerd Font Propo"
-                       font_size: 10      // Scaled down font size
-                       btnWidth: 30       // Explicitly smaller width
-                       btnHeight: 30      // Stays square
-                       
-                       // Swapped ~ for $HOME. sh -c often fails to expand ~ properly
-                       cmd: "nohup $HOME/.local/bin/quickshell-reload > /dev/null 2>&1 &"
-                   }
-              
-            id: quickMenu    
-
+            // Power controls row: Shutdown · Reboot · Lock
             RowLayout {
                 Layout.alignment: Qt.AlignHCenter
                 Layout.fillWidth: true
-                spacing: 15
+                spacing: cfg.sysRowSpacing
 
-                
-                
-                // Shutdown Button (Red accent)
                 SysButton {
                     name: "\udb81\udc25"
-                    font: "JetBrainsMono Nerd Font Propo"
-                    font_size: 40
-                    cmd: "systemctl poweroff"
-                    //baseColor: "#453a40" // Slight reddish tint for safety
-                    //hoverColor: "#f38ba8" // Catppuccin Red
+                    cmd:  "systemctl poweroff"
                 }
-                
 
-                // Reboot Button
                 SysButton {
                     name: "\udb81\udf09"
-                    font: "JetBrainsMono Nerd Font Propo"
-                    font_size: 40
-                    cmd: "systemctl reboot"
+                    cmd:  "systemctl reboot"
                 }
 
-                // Lock Button
-                   SysButton {
-                       name: "\udb80\udf3e"
-                    font: "JetBrainsMono Nerd Font Propo"
-                    font_size: 33
-                       cmd: "sleep 0.3 && pidof hyprlock || hyprlock" // Prevents opening twice
-                   }               
-             }
+                SysButton {
+                    name:     "\udb80\udf3e"
+                    fontSize: cfg.lockBtnFontSize
+                    cmd:      "sleep 0.3 && pidof hyprlock || hyprlock"
+                }
+            }
 
-             Rectangle {
-                implicitHeight: 5
+            // Section divider
+            Rectangle {
+                implicitHeight: cfg.dividerHeight
                 Layout.fillWidth: true
-                radius: 10
-                color: Theme.accent_down
-             }
-              RowLayout{
-                  id: quickButtons
-                  spacing: 10
+                radius: cfg.dividerRadius
+                color:  Theme.accent_down
+            }
+
+            // Quick-toggle row: Wi-Fi · Bluetooth
+            RowLayout {
+                id: quickButtons
                 Layout.alignment: Qt.AlignHCenter
-                  Layout.fillWidth: true
-                  
+                Layout.fillWidth: true
+                spacing: cfg.toggleRowSpacing
 
-                // Wifi Button
-                QuickToggle {
-                    name: "\udb81\udda9"
-                    font_size: 33
+                QuickToggle { name: "\udb81\udda9" } // Wi-Fi
+                QuickToggle { name: "\udb80\udcaf" } // Bluetooth
+            }
+
+            // Audio output selector
+            ListSelector {
+                id: audioOutputSelector
+
+                name:     "\udb81\udcc3"
+                selected: rootMainMenu.currentDefaultSink
+                option:   rootMainMenu.audioDeviceNames
+
+                Layout.alignment:  Qt.AlignHCenter
+                Layout.leftMargin: cfg.contentMargin - 2
+                Layout.rightMargin: cfg.contentMargin - 2
+
+                onItemSelected: (item) => {
+                    let id = rootMainMenu.audioDeviceMap[item]
+                    if (id) {
+                        console.log("Switching audio to:", item, "ID:", id)
+                        wpctlSetter.command = ["wpctl", "set-default", id]
+                        wpctlSetter.running = true
+                    } else {
+                        console.warn("No ID found for selected device:", item)
+                    }
                 }
+            }
 
-                // Bluetooth Button
-                QuickToggle {
-                    name: "\udb80\udcaf"
-                    font_size: 33
-                }
-                  
-              }
-
-              ListSelector {
-                  id: audioOutputSelector
-                  name: "\udb81\udcc3"
-                  selected: rootMainMenu.currentDefaultSink
-                  option: rootMainMenu.audioDeviceNames
-                Layout.preferredWidth: 100
-                  Layout.alignment: Qt.AlignHCenter
-                  Layout.leftMargin: 8
-                  Layout.rightMargin: 8
-                font_size_name: 26
-                font_size: 16
+            // Decorative animated GIF
+            AnimatedImage {
+                source:                "/home/larke/.config/quickshell/assets/ado-dancing3.gif"
+                Layout.preferredWidth:  cfg.gifSize
+                Layout.preferredHeight: cfg.gifSize
+                fillMode:              Image.PreserveAspectFit
+                Layout.leftMargin:     cfg.gifLeftMargin
+                playing:               true
+            }
+        }
+    }
+  }
 
 
-                  onItemSelected:  (item) => {
-                      let id = rootMainMenu.audioDeviceMap[item];
 
-                      if (id) {
-                           console.log("Switching audio to:", item, "ID:", id);
-                           wpctlSetter.command = ["wpctl", "set-default", id];
-                           wpctlSetter.running = true;
-                       } else {
-                           console.warn("No ID found for selected device:", item);
-                       }
-                  }
-                  
-              }
-
-
-             AnimatedImage {
-                 source: "/home/larke/.config/quickshell/assets/ado-dancing3.gif"
-                 Layout.preferredHeight: 250
-                 Layout.preferredWidth: 250
-                 fillMode: Image.PreserveAspectFit
-                 Layout.leftMargin: 27
-                 playing: true
-             }                
-          }
-      }
-}
