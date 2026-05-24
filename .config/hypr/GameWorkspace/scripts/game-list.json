@@ -183,5 +183,10 @@
     "initial_class": "gamescope",
     "initial_title": "XIVLauncher 1.4.0 (06c3298)",
     "app_class": "gamescope"
+  },
+  {
+    "initial_class": "steam_app_default",
+    "initial_title": "Chef RPG",
+    "app_class": "steam_app_default"
   }
 ]

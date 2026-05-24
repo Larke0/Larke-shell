@@ -189,3 +189,8 @@ hl.window_rule({ match = { initial_class = [[^(([gG])amescope)$]] }, workspace =
 hl.window_rule({ match = { initial_title = [[^(XIVLauncher 1\.4\.0 \(06c3298\))$]] }, workspace = "special:games" })
 hl.window_rule({ match = { class = [[^(([gG])amescope)$]] }, workspace = "special:games" })
 
+-- --- Entry: Chef RPG ---
+hl.window_rule({ match = { initial_class = [[^(([sS])team_app_default)$]] }, workspace = "special:games" })
+hl.window_rule({ match = { initial_title = [[^(Chef RPG)$]] }, workspace = "special:games" })
+hl.window_rule({ match = { class = [[^(([sS])team_app_default)$]] }, workspace = "special:games" })
+
