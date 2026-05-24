@@ -32,7 +32,7 @@ Image {
     	id: quickMenu
     	anchorWindow: rootTopBar
 
-    	visible: true
+    	visible: false
     }
     
 }
