@@ -50,10 +50,8 @@ if [[ "$target_input" == +* || "$target_input" == -* ]]; then
 
   final_target=$((start_ws + new_offset))
 else
-  if ((target_input > range_size)); then target_input=$range_size; fi
-  if ((target_input < 1)); then target_input=1; fi
-
-  final_target=$((start_ws + target_input - 1))
+  base_offset=$(((target_input - 1) % range_size))
+  final_target=$((start_ws + base_offset))
 fi
 
 # --- STEP 2.5: LUA-COMPLIANT SPECIAL WORKSPACE HANDLING ---
