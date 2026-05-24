@@ -38,10 +38,10 @@ hl.bind("SUPER + ALT + right", hl.dsp.window.move({ direction = "right" }))
 hl.bind("SUPER + ALT + up", hl.dsp.window.move({ direction = "up" }))
 hl.bind("SUPER + ALT + down", hl.dsp.window.move({ direction = "down" }))
 
-hl.bind("SUPER + SHIFT + left", hl.dsp.window.resize({ x = -25, y = 0 }))
-hl.bind("SUPER + SHIFT + right", hl.dsp.window.resize({ x = 25, y = 0 }))
-hl.bind("SUPER + SHIFT + up", hl.dsp.window.resize({ x = 0, y = -25 }))
-hl.bind("SUPER + SHIFT + down", hl.dsp.window.resize({ x = 0, y = 25 }))
+hl.bind("SUPER + SHIFT + left", hl.dsp.window.resize({ x = -25, y = 0, relative = true }))
+hl.bind("SUPER + SHIFT + right", hl.dsp.window.resize({ x = 25, y = 0, relative = true }))
+hl.bind("SUPER + SHIFT + up", hl.dsp.window.resize({ x = 0, y = -25, relative = true }))
+hl.bind("SUPER + SHIFT + down", hl.dsp.window.resize({ x = 0, y = 25, relative = true }))
 
 -- Window Layout States
 hl.bind("SUPER + ALT + F", hl.dsp.window.float({ action = "toggle" }))
