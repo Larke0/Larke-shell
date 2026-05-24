@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Shapes
 import Quickshell
 import Quickshell.Wayland
 import Quickshell.Hyprland
@@ -19,6 +20,11 @@ PanelWindow {
   property var audioDeviceNames: []
   property var audioDeviceMap: ({})
   property string currentDefaultSink: ""
+
+
+  property real cornerRadius: 25
+  property real safeWidth: Math.max(rootMainMenu.width, rootMainMenu.implicitWidth)
+  property real safeHeight: Math.max(rootMainMenu.height, rootMainMenu.implicitHeight)
 
     Process {
         id: powerAction
@@ -107,7 +113,7 @@ PanelWindow {
 
   anchors.top: true
   anchors.left: true
-  implicitWidth: 300
+  implicitWidth: 320
   implicitHeight: 1050
   color: "transparent"
   visible: true
@@ -371,11 +377,64 @@ PanelWindow {
 
 
   //Visual Content
-      Rectangle {
+      Shape {
+          id: bgShape
           anchors.fill: parent
-          color: Theme.background
-          radius: 0
+          layer.enabled: true
+          layer.samples: 4 
 
+          // Safe Wayland dimensions
+          property real safeW: Math.max(rootMainMenu.width, 320)
+          property real safeH: Math.max(rootMainMenu.height, 1050)
+          
+          // Cutout Settings
+          property real notchDepth: 20   // How deep the cutout bites into the left
+          property real notchRadius: 20  // The corner roundness of the cutout
+
+          ShapePath {
+              fillColor: Theme.background
+              strokeColor: "transparent"
+
+              startX: 0
+              startY: 0
+
+              // 1. Top Edge: Draw all the way to the max width
+              PathLine { x: bgShape.safeW; y: 0 }
+
+              // 2. Top-Right Swoop (Starts exactly at y: 0)
+              PathQuad {
+                  // Magnet is placed inside to pull the curve INWARD
+                  controlX: bgShape.safeW - bgShape.notchDepth
+                  controlY: 0
+                  
+                  // Ends down by the radius amount, and inward by the depth amount
+                  x: bgShape.safeW - bgShape.notchDepth
+                  y: bgShape.notchRadius
+              }
+
+              // 3. Inner Right Edge: The flat vertical wall of the cutout
+              PathLine { 
+                  x: bgShape.safeW - bgShape.notchDepth
+                  y: bgShape.safeH - bgShape.notchRadius 
+              }
+
+              // 4. Bottom-Right Swoop (Ends exactly at max height)
+              PathQuad {
+                  // Magnet is placed inside to pull the curve INWARD
+                  controlX: bgShape.safeW - bgShape.notchDepth
+                  controlY: bgShape.safeH
+                  
+                  // Sweeps back out to the max width exactly at the bottom
+                  x: bgShape.safeW
+                  y: bgShape.safeH
+              }
+
+              // 5. Bottom Edge: Draw back to the left wall
+              PathLine { x: 0; y: bgShape.safeH }
+
+              // 6. Left Edge: Close the shape!
+              PathLine { x: 0; y: 0 }
+          }          
             transform: Translate {
                 id: slidePos
                 x: -310 
@@ -439,7 +498,9 @@ PanelWindow {
             ]
 
           ColumnLayout{
-              spacing: 10
+            spacing: 10
+            Layout.fillWidth: false
+            width: 300
               anchors {
                   top: parent.top
                   horizontalCenter: parent.horizontalCenter
@@ -459,7 +520,6 @@ PanelWindow {
                        cmd: "nohup $HOME/.local/bin/quickshell-reload > /dev/null 2>&1 &"
                    }
               
-            width: parent.width
             id: quickMenu    
 
             RowLayout {
