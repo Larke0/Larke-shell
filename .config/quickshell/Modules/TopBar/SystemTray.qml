@@ -11,7 +11,15 @@ RowLayout {
 
     property var parentWindow
 
-    // First repeater: everything except fcitx and nm-applet
+    // ─── EASY EXCLUSION LIST ─────────────────────────────────────────
+    // Just add any partial or full application IDs here to hide them!
+    property var ignoreList: [
+        "fcitx",
+        "kde connect indicator"
+    ]
+    // ─────────────────────────────────────────────────────────────────
+
+    // First repeater: everything except ignored items and nm-applet
     Repeater {
         model: SystemTray.items
 
@@ -19,7 +27,9 @@ RowLayout {
             id: trayItem
 
             property string itemId: modelData.id.toLowerCase()
-            visible: !itemId.includes("fcitx") && itemId !== "nm-applet"
+            
+            // Dynamic check: loops through ignoreList to see if any match the current item ID
+            visible: !systemTray.ignoreList.some(ignored => itemId.includes(ignored)) && itemId !== "nm-applet"
 
             Layout.preferredWidth: 20
             Layout.preferredHeight: 20

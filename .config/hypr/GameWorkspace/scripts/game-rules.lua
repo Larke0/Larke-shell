@@ -194,3 +194,8 @@ hl.window_rule({ match = { initial_class = [[^(([sS])team_app_default)$]] }, wor
 hl.window_rule({ match = { initial_title = [[^(Chef RPG)$]] }, workspace = "special:games" })
 hl.window_rule({ match = { class = [[^(([sS])team_app_default)$]] }, workspace = "special:games" })
 
+-- --- Entry: Paralives ---
+hl.window_rule({ match = { initial_class = [[^(([sS])team_app_1118520)$]] }, workspace = "special:games" })
+hl.window_rule({ match = { initial_title = [[^(Paralives)$]] }, workspace = "special:games" })
+hl.window_rule({ match = { class = [[^(([sS])team_app_1118520)$]] }, workspace = "special:games" })
+

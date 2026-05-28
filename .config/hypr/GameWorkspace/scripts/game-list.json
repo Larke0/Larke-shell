@@ -188,5 +188,10 @@
     "initial_class": "steam_app_default",
     "initial_title": "Chef RPG",
     "app_class": "steam_app_default"
+  },
+  {
+    "initial_class": "steam_app_1118520",
+    "initial_title": "Paralives",
+    "app_class": "steam_app_1118520"
   }
 ]
