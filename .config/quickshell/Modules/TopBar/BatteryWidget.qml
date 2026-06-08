@@ -40,32 +40,36 @@ Item {
     id: capacityFile
     path: "/sys/class/power_supply/BAT1/capacity"
     onLoaded: {
-      let val = parseInt(text().trim());
-      if (!isNaN(val)) {
-        batteryRoot.hasBattery = true;
-        batteryRoot.percent = val;
-      }
+        let val = parseInt(text().trim())
+        if (!isNaN(val)) {
+            batteryRoot.hasBattery = true
+            batteryRoot.percent = val
+        }
     }
-    onLoadFailed: batteryRoot.hasBattery = false;
-  }
+    onLoadFailed: {
+        batteryRoot.hasBattery = false
+        batteryTimer.running = false  // stop polling entirely
+    }
+}
 
-  FileView {
+FileView {
     id: statusFile
     path: "/sys/class/power_supply/BAT1/status"
-    onLoaded: batteryRoot.status = text().trim();
-  }
+    onLoaded: batteryRoot.status = text().trim()
+    onLoadFailed: {}  // silently ignore — no battery
+}
 
-  Timer {
-    interval: 1000 
+Timer {
+    id: batteryTimer
+    interval: 1000
     running: true
     repeat: true
     triggeredOnStart: true
     onTriggered: {
-      capacityFile.reload();
-      statusFile.reload();
+        capacityFile.reload()
+        statusFile.reload()
     }
-  }
-
+}
 Item {
     id: batteryRow
     implicitWidth: hoverHandler.hovered ? batteryIcon.width + percentText.width + 4 : batteryIcon.width

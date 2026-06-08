@@ -121,7 +121,22 @@ PanelWindow {
 
     onIsOpenChanged: {
         if (isOpen) {
+            console.log("=== MENU OPENED ===")
+            console.log("anchorWindow:", anchorWindow)
+            console.log("anchorWindow.screen:", anchorWindow?.screen)
+            console.log("anchorWindow.screen.name:", anchorWindow?.screen?.name)
             pwDumper.running = true
+
+            if (anchorWindow && anchorWindow.screen) {
+                ddcDisplayFinder.waylandOutput = anchorWindow.screen.name
+                console.log("Starting ddcDisplayFinder with output:", ddcDisplayFinder.waylandOutput)
+                ddcDisplayFinder.running = true
+            } else {
+                console.warn("No anchorWindow screen — falling back to display 1")
+                rootMainMenu.currentDdcDisplay = 1
+                brightnessFetcher.running = true
+            }
+
             focusTimer.start()
         } else {
             pwDumper.running = false
@@ -144,6 +159,63 @@ PanelWindow {
     // -------------------------------------------------------------------------
     // Processes
     // -------------------------------------------------------------------------
+
+    // Dynamic Monitor Context Management
+    property int currentDdcDisplay: 1
+
+    // 1. Fully generic interface mapper
+    Process {
+        id: ddcDisplayFinder
+        property string waylandOutput: ""
+
+        command: ["sh", "-c", "ddcutil detect | awk -v t='" + waylandOutput + "' '/Display/ {id=$2} /DRM_connector:/ {conn=$2; sub(/^card[0-9]+-/, \"\", conn); if (conn == t) print id}'"]
+
+        stdout: StdioCollector {
+            onStreamFinished: {
+                let output = this.text.trim()
+                console.log("ddcDisplayFinder raw output: '" + output + "'")
+                console.log("ddcDisplayFinder was looking for:", ddcDisplayFinder.waylandOutput)
+                if (output.length > 0) {
+                    let resolvedId = parseInt(output)
+                    console.log("Resolved display ID:", resolvedId)
+                    if (!isNaN(resolvedId)) {
+                        rootMainMenu.currentDdcDisplay = resolvedId
+                        console.log("currentDdcDisplay set to:", rootMainMenu.currentDdcDisplay)
+                        brightnessFetcher.command = ["sh", "-c", "ddcutil --display " + resolvedId + " getvcp 10 | grep -oP 'current value = \\s*\\K[0-9]+'"]
+                        console.log("Fetching brightness for display:", resolvedId)
+                        brightnessFetcher.running = true
+                    }
+                } else {
+                    console.warn("ddcDisplayFinder got empty output — no match for: " + ddcDisplayFinder.waylandOutput)
+                }
+            }
+        }
+    }
+
+    // 2. Fetches current hardware brightness for the resolved display ID
+    Process {
+        id: brightnessFetcher
+
+        stdout: StdioCollector {
+            onStreamFinished: {
+                let output = this.text.trim()
+                console.log("brightnessFetcher raw output: '" + output + "'")
+                console.log("brightnessFetcher was targeting display:", rootMainMenu.currentDdcDisplay)
+                if (output.length > 0) {
+                    let val = parseInt(output)
+                    if (!isNaN(val)) {
+                        console.log("Setting slider to:", val)
+                        brightnessSlider.value = val
+                    }
+                }
+            }
+        }
+    }
+
+    // 3. Pushes slider updates to the correct display
+    Process {
+        id: brightnessSetter
+    }
 
     // Runs an arbitrary shell command (used by SysButton)
     Process {
@@ -173,7 +245,6 @@ PanelWindow {
                     let mapping = {}
                     let defaultNodeName = ""
 
-                    // Locate the metadata object that records the default sink
                     let metadata = data.find(obj =>
                         obj.type === "PipeWire:Interface:Metadata" &&
                         obj.props &&
@@ -187,7 +258,6 @@ PanelWindow {
                         }
                     }
 
-                    // Collect all Audio/Sink nodes
                     data.filter(obj =>
                         obj.info?.props?.["media.class"] === "Audio/Sink"
                     ).forEach(sink => {
@@ -224,7 +294,6 @@ PanelWindow {
     // Timers
     // -------------------------------------------------------------------------
 
-    // Delays focus-grab so the panel doesn't close the moment it opens
     Timer {
         id: focusTimer
         interval: cfg.focusDelay
@@ -234,7 +303,6 @@ PanelWindow {
         }
     }
 
-    // Auto-closes the panel when the mouse leaves
     Timer {
         id: closeTimer
         interval: cfg.autoCloseDelay
@@ -244,7 +312,7 @@ PanelWindow {
 
 
     // -------------------------------------------------------------------------
-    // Focus grab — closes the panel when the user clicks outside it
+    // Focus grab
     // -------------------------------------------------------------------------
     HyprlandFocusGrab {
         windows: [rootMainMenu]
@@ -257,7 +325,6 @@ PanelWindow {
     // Reusable components
     // =========================================================================
 
-    // A rounded button that runs a shell command on click
     component SysButton: Rectangle {
         id: btn
 
@@ -300,7 +367,6 @@ PanelWindow {
     }
 
 
-    // A toggleable pill button (e.g. Wi-Fi, Bluetooth)
     component QuickToggle: Rectangle {
         id: toggle
 
@@ -332,7 +398,6 @@ PanelWindow {
     }
 
 
-    // A dropdown-style list selector with animated expand/collapse
     component ListSelector: ColumnLayout {
         id: selector
 
@@ -352,6 +417,17 @@ PanelWindow {
         spacing:       buttonSpacing
         implicitWidth: cfg.contentWidth
 
+        implicitHeight: selector.expanded
+            ? (selector.option.length + 1) * (selector.buttonHeight + selector.buttonSpacing)
+            : selector.buttonHeight + selector.buttonSpacing
+
+        Behavior on implicitHeight {
+            NumberAnimation {
+                duration:    cfg.selectorAnimMs
+                easing.type: Easing.OutCubic
+            }
+        }
+
         // Header / trigger row
         Rectangle {
             Layout.fillWidth: true
@@ -361,9 +437,9 @@ PanelWindow {
 
             RowLayout {
                 anchors {
-                    fill:         parent
-                    leftMargin:   15
-                    rightMargin:  15
+                    fill:        parent
+                    leftMargin:  15
+                    rightMargin: 15
                 }
                 spacing: 5
 
@@ -457,14 +533,102 @@ PanelWindow {
         }
     }
 
-    // Placeholder — implement slider controls here when needed
+
     component ListSlider: ColumnLayout {
-        id: listSlider
+        id: sliderRoot
+
+        property string icon: "\udb80\udcdd"
+        property int value: 50
+        property int minValue: 0
+        property int maxValue: 100
+
+        property int sliderHeight: 50
+        property int sliderRadius: 20
+        property int iconSize: 26
+
+        signal valueChangedByUser(int newValue)
+
+        spacing: 5
+        implicitWidth: cfg.contentWidth
+
+        Rectangle {
+            Layout.fillWidth: true
+            height: sliderRoot.sliderHeight
+            radius: sliderRoot.sliderRadius
+            color: Theme.secondary_accent
+
+            RowLayout {
+                anchors {
+                    fill:        parent
+                    leftMargin:  15
+                    rightMargin: 15
+                }
+                spacing: 15
+
+                Text {
+                    text:           sliderRoot.icon
+                    color:          "white"
+                    font.family:    cfg.nerdFont
+                    font.pixelSize: sliderRoot.iconSize
+                }
+
+                Rectangle {
+                    id: track
+                    Layout.fillWidth: true
+                    height: 6
+                    radius: 3
+                    color: Theme.empty
+
+                    Rectangle {
+                        id: fill
+                        width: track.width * ((sliderRoot.value - sliderRoot.minValue) / (sliderRoot.maxValue - sliderRoot.minValue))
+                        height: parent.height
+                        radius: parent.radius
+                        color: Theme.accent
+                    }
+
+                    Rectangle {
+                        id: handle
+                        width:  16
+                        height: 16
+                        radius: 8
+                        color:  "white"
+                        anchors.verticalCenter: parent.verticalCenter
+                        x: fill.width - (width / 2)
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+
+                        function updateValue(mouseX) {
+                            let ratio    = Math.max(0, Math.min(1, mouseX / track.width))
+                            let newValue = Math.round(sliderRoot.minValue + ratio * (sliderRoot.maxValue - sliderRoot.minValue))
+                            if (sliderRoot.value !== newValue) {
+                                sliderRoot.value = newValue
+                                sliderRoot.valueChangedByUser(newValue)
+                            }
+                        }
+
+                        onPositionChanged: (mouse) => { if (pressed) updateValue(mouse.x) }
+                        onClicked:         (mouse) => updateValue(mouse.x)
+                    }
+                }
+
+                Text {
+                    text:                   sliderRoot.value + "%"
+                    color:                  "white"
+                    font.bold:              true
+                    font.pixelSize:         14
+                    Layout.minimumWidth:    40
+                    horizontalAlignment:    Text.AlignRight
+                }
+            }
+        }
     }
 
 
     // =========================================================================
-    // Visual content — the panel background shape + all UI elements
+    // Visual content
     // =========================================================================
     Shape {
         id: bgShape
@@ -472,11 +636,9 @@ PanelWindow {
         layer.enabled: true
         layer.samples: 4
 
-        // Live dimensions (guard against zero during startup)
         property real safeW: Math.max(rootMainMenu.width,  cfg.panelWidth)
         property real safeH: Math.max(rootMainMenu.height, cfg.panelHeight)
 
-        // Right-edge cutout that visually separates the panel from the screen edge
         property real notchDepth:  cfg.notchDepth
         property real notchRadius: cfg.notchRadius
 
@@ -486,43 +648,34 @@ PanelWindow {
 
             startX: 0; startY: 0
 
-            // Top edge →
             PathLine { x: bgShape.safeW; y: 0 }
 
-            // Top-right cutout corner
             PathQuad {
                 controlX: bgShape.safeW - bgShape.notchDepth; controlY: 0
                 x:        bgShape.safeW - bgShape.notchDepth
                 y:        bgShape.notchRadius
             }
 
-            // Right inner wall ↓
             PathLine {
                 x: bgShape.safeW - bgShape.notchDepth
                 y: bgShape.safeH - bgShape.notchRadius
             }
 
-            // Bottom-right cutout corner
             PathQuad {
                 controlX: bgShape.safeW - bgShape.notchDepth; controlY: bgShape.safeH
                 x:        bgShape.safeW
                 y:        bgShape.safeH
             }
 
-            // Bottom edge ←
             PathLine { x: 0; y: bgShape.safeH }
-
-            // Left edge ↑ (closes the shape)
             PathLine { x: 0; y: 0 }
         }
 
-        // Slide transform — starts offscreen to the left, animates to x: 0
         transform: Translate {
             id: slidePos
             x: cfg.slideOffsetX
         }
 
-        // Mouse-leave auto-close
         HoverHandler {
             onHoveredChanged: {
                 if (hovered) closeTimer.stop()
@@ -530,7 +683,6 @@ PanelWindow {
             }
         }
 
-        // Open state slides the panel into view
         states: State {
             name: "open"
             when: rootMainMenu.isOpen
@@ -565,108 +717,132 @@ PanelWindow {
         ]
 
         // -----------------------------------------------------------------
-        // Content column
+        // Flickable content area — allows scrolling when selector expands
         // -----------------------------------------------------------------
-        ColumnLayout {
-            id: quickMenu
-            spacing: cfg.sectionSpacing
-
+        Flickable {
             anchors {
                 top:              parent.top
                 horizontalCenter: parent.horizontalCenter
                 margins:          cfg.contentMargin
             }
+            width:        cfg.contentWidth
+            height:       cfg.panelHeight - cfg.contentMargin * 2
+            contentWidth: cfg.contentWidth
+            contentHeight: quickMenu.implicitHeight
+            clip:         true
+            interactive:  contentHeight > height
 
-            implicitWidth: cfg.contentWidth
+            ColumnLayout {
+                id: quickMenu
+                spacing: cfg.sectionSpacing
+                width: cfg.contentWidth
 
-            // Quickshell hot-reload button (small, top of panel)
-            SysButton {
-                name:       "\udb82\udc14"
-                fontFamily: cfg.nerdFont
-                fontSize:   cfg.reloadBtnFontSize
-                btnWidth:   cfg.reloadBtnSize
-                btnHeight:  cfg.reloadBtnSize
-                cmd: "nohup $HOME/.local/bin/quickshell-reload > /dev/null 2>&1 &"
-            }
-
-            // Power controls row: Shutdown · Reboot · Lock
-            RowLayout {
-                Layout.alignment: Qt.AlignHCenter
-                Layout.fillWidth: true
-                spacing: cfg.sysRowSpacing
-
+                // Quickshell hot-reload button
                 SysButton {
-                    name: "\udb81\udc25"
-                    cmd:  "systemctl poweroff"
+                    name:       "\udb82\udc14"
+                    fontFamily: cfg.nerdFont
+                    fontSize:   cfg.reloadBtnFontSize
+                    btnWidth:   cfg.reloadBtnSize
+                    btnHeight:  cfg.reloadBtnSize
+                    cmd: "nohup $HOME/.local/bin/quickshell-reload > /dev/null 2>&1 &"
                 }
 
-                SysButton {
-                    name: "\udb81\udf09"
-                    cmd:  "systemctl reboot"
-                }
+                // Power controls row: Shutdown · Reboot · Lock
+                RowLayout {
+                    Layout.alignment: Qt.AlignHCenter
+                    Layout.fillWidth: true
+                    spacing: cfg.sysRowSpacing
 
-                SysButton {
-                    name:     "\udb80\udf3e"
-                    fontSize: cfg.lockBtnFontSize
-                    cmd:      "sleep 0.3 && pidof hyprlock || hyprlock"
-                }
-            }
+                    SysButton {
+                        name: "\udb81\udc25"
+                        cmd:  "systemctl poweroff"
+                    }
 
-            // Section divider
-            Rectangle {
-                implicitHeight: cfg.dividerHeight
-                Layout.fillWidth: true
-                radius: cfg.dividerRadius
-                color:  Theme.accent_down
-            }
+                    SysButton {
+                        name: "\udb81\udf09"
+                        cmd:  "systemctl reboot"
+                    }
 
-            // Quick-toggle row: Wi-Fi · Bluetooth
-            RowLayout {
-                id: quickButtons
-                Layout.alignment: Qt.AlignHCenter
-                Layout.fillWidth: true
-                spacing: cfg.toggleRowSpacing
-
-                QuickToggle { name: "\udb81\udda9" } // Wi-Fi
-                QuickToggle { name: "\udb80\udcaf" } // Bluetooth
-            }
-
-            // Audio output selector
-            ListSelector {
-                id: audioOutputSelector
-
-                name:     "\udb81\udcc3"
-                selected: rootMainMenu.currentDefaultSink
-                option:   rootMainMenu.audioDeviceNames
-
-                Layout.alignment:  Qt.AlignHCenter
-                Layout.leftMargin: cfg.contentMargin - 2
-                Layout.rightMargin: cfg.contentMargin - 2
-
-                onItemSelected: (item) => {
-                    let id = rootMainMenu.audioDeviceMap[item]
-                    if (id) {
-                        console.log("Switching audio to:", item, "ID:", id)
-                        wpctlSetter.command = ["wpctl", "set-default", id]
-                        wpctlSetter.running = true
-                    } else {
-                        console.warn("No ID found for selected device:", item)
+                    SysButton {
+                        name:     "\udb80\udf3e"
+                        fontSize: cfg.lockBtnFontSize
+                        cmd:      "sleep 0.3 && pidof hyprlock || hyprlock"
                     }
                 }
-            }
 
-            // Decorative animated GIF
-            AnimatedImage {
-                source:                "/home/larke/.config/quickshell/assets/ado-dancing3.gif"
-                Layout.preferredWidth:  cfg.gifSize
-                Layout.preferredHeight: cfg.gifSize
-                fillMode:              Image.PreserveAspectFit
-                Layout.leftMargin:     cfg.gifLeftMargin
-                playing:               true
+                // Section divider
+                Rectangle {
+                    implicitHeight: cfg.dividerHeight
+                    Layout.fillWidth: true
+                    radius: cfg.dividerRadius
+                    color:  Theme.accent_down
+                }
+
+                // Quick-toggle row: Wi-Fi · Bluetooth
+                RowLayout {
+                    id: quickButtons
+                    Layout.alignment: Qt.AlignHCenter
+                    Layout.fillWidth: true
+                    spacing: cfg.toggleRowSpacing
+
+                    QuickToggle { name: "\udb81\udda9" }
+                    QuickToggle { name: "\udb80\udcaf" }
+                }
+
+                // Audio output selector
+                ListSelector {
+                    id: audioOutputSelector
+
+                    name:     "\udb81\udcc3"
+                    selected: rootMainMenu.currentDefaultSink
+                    option:   rootMainMenu.audioDeviceNames
+
+                    Layout.alignment:   Qt.AlignHCenter
+                    Layout.leftMargin:  cfg.contentMargin - 2
+                    Layout.rightMargin: cfg.contentMargin - 2
+
+                    onItemSelected: (item) => {
+                        let id = rootMainMenu.audioDeviceMap[item]
+                        if (id) {
+                            console.log("Switching audio to:", item, "ID:", id)
+                            wpctlSetter.command = ["wpctl", "set-default", id]
+                            wpctlSetter.running = true
+                        } else {
+                            console.warn("No ID found for selected device:", item)
+                        }
+                    }
+                }
+
+                // Brightness slider
+                ListSlider {
+                    id: brightnessSlider
+                    icon: "\udb80\udcdd"
+
+                    Layout.alignment:   Qt.AlignHCenter
+                    Layout.leftMargin:  cfg.contentMargin - 2
+                    Layout.rightMargin: cfg.contentMargin - 2
+
+                    onValueChangedByUser: (newValue) => {
+                        console.log("Slider changed to:", newValue, "— targeting display:", rootMainMenu.currentDdcDisplay)
+                        brightnessSetter.command = [
+                            "sh", "-c",
+                            "ddcutil --async --display " + rootMainMenu.currentDdcDisplay + " setvcp 10 " + newValue
+                        ]
+                        console.log("brightnessSetter command:", brightnessSetter.command.join(" "))
+                        brightnessSetter.running = true
+                    }
+                }
+
+                // Decorative animated GIF
+                AnimatedImage {
+                    source:                 "/home/larke/.config/quickshell/assets/ado-dancing3.gif"
+                    Layout.preferredWidth:  cfg.gifSize
+                    Layout.preferredHeight: cfg.gifSize
+                    fillMode:               Image.PreserveAspectFit
+                    Layout.leftMargin:      cfg.gifLeftMargin
+                    playing:                true
+                }
             }
         }
     }
-  }
-
-
-
+}

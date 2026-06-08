@@ -199,3 +199,8 @@ hl.window_rule({ match = { initial_class = [[^(([sS])team_app_1118520)$]] }, wor
 hl.window_rule({ match = { initial_title = [[^(Paralives)$]] }, workspace = "special:games" })
 hl.window_rule({ match = { class = [[^(([sS])team_app_1118520)$]] }, workspace = "special:games" })
 
+-- --- Entry: Dead Island 2   ---
+hl.window_rule({ match = { initial_class = [[^(([sS])team_app_0)$]] }, workspace = "special:games" })
+hl.window_rule({ match = { initial_title = [[^(Dead Island 2  )$]] }, workspace = "special:games" })
+hl.window_rule({ match = { class = [[^(([sS])team_app_0)$]] }, workspace = "special:games" })
+
