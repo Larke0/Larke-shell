@@ -130,11 +130,6 @@
     "app_class": "steam_proton"
   },
   {
-    "initial_class": "Minecraft* 1.20.1",
-    "initial_title": "Minecraft* 1.20.1",
-    "app_class": "Minecraft* 1.20.1"
-  },
-  {
     "initial_class": "bg3",
     "initial_title": "Baldur's Gate 3 (1920x1080) - (Vulkan) - (6 + 6 WT)",
     "app_class": "bg3"
@@ -198,5 +193,55 @@
     "initial_class": "steam_app_0",
     "initial_title": "Dead Island 2  ",
     "app_class": "steam_app_0"
+  },
+  {
+    "initial_class": "steam_app_3059177493",
+    "initial_title": "Core Keeper",
+    "app_class": "steam_app_3059177493"
+  },
+  {
+    "initial_class": "RiseOfTheTombRaider",
+    "initial_title": "Rise of the Tomb Raider™ Options",
+    "app_class": "RiseOfTheTombRaider"
+  },
+  {
+    "initial_class": "steam_app_391220",
+    "initial_title": "Rise of the Tomb Raider",
+    "app_class": "steam_app_391220"
+  },
+  {
+    "initial_class": "Minecraft* 1.20.1",
+    "initial_title": "Minecraft* 1.20.1",
+    "app_class": "Minecraft* 1.20.1"
+  },
+  {
+    "initial_class": "steam_app_4747510",
+    "initial_title": "BOMBANANA",
+    "app_class": "steam_app_4747510"
+  },
+  {
+    "initial_class": "steam_app_4682480",
+    "initial_title": "Keep It Up! Demo  ",
+    "app_class": "steam_app_4682480"
+  },
+  {
+    "initial_class": "barony.x86_64",
+    "initial_title": "Barony",
+    "app_class": "barony.x86_64"
+  },
+  {
+    "initial_class": "steam_app_371970",
+    "initial_title": "Barony",
+    "app_class": "steam_app_371970"
+  },
+  {
+    "initial_class": "steam_app_953880",
+    "initial_title": "FCT  ",
+    "app_class": "steam_app_953880"
+  },
+  {
+    "initial_class": "steam_app_381210",
+    "initial_title": "Dead by Daylight",
+    "app_class": "steam_app_381210"
   }
 ]

@@ -134,11 +134,6 @@ hl.window_rule({ match = { initial_class = [[^(([sS])team_proton)$]] }, workspac
 hl.window_rule({ match = { initial_title = [[^(Endfield)$]] }, workspace = "special:games" })
 hl.window_rule({ match = { class = [[^(([sS])team_proton)$]] }, workspace = "special:games" })
 
--- --- Entry: Minecraft* 1.20.1 ---
-hl.window_rule({ match = { initial_class = [[^(([mM])inecraft* 1.20.1)$]] }, workspace = "special:games" })
-hl.window_rule({ match = { initial_title = [[^(Minecraft\* 1\.20\.1)$]] }, workspace = "special:games" })
-hl.window_rule({ match = { class = [[^(([mM])inecraft* 1.20.1)$]] }, workspace = "special:games" })
-
 -- --- Entry: Baldur's Gate 3 (1920x1080) - (Vulkan) - (6 + 6 WT) ---
 hl.window_rule({ match = { initial_class = [[^(([bB])g3)$]] }, workspace = "special:games" })
 hl.window_rule({ match = { initial_title = [[^(Baldur's Gate 3 \(1920x1080\) - \(Vulkan\) - \(6 \+ 6 WT\))$]] }, workspace = "special:games" })
@@ -203,4 +198,54 @@ hl.window_rule({ match = { class = [[^(([sS])team_app_1118520)$]] }, workspace =
 hl.window_rule({ match = { initial_class = [[^(([sS])team_app_0)$]] }, workspace = "special:games" })
 hl.window_rule({ match = { initial_title = [[^(Dead Island 2  )$]] }, workspace = "special:games" })
 hl.window_rule({ match = { class = [[^(([sS])team_app_0)$]] }, workspace = "special:games" })
+
+-- --- Entry: Core Keeper ---
+hl.window_rule({ match = { initial_class = [[^(([sS])team_app_3059177493)$]] }, workspace = "special:games" })
+hl.window_rule({ match = { initial_title = [[^(Core Keeper)$]] }, workspace = "special:games" })
+hl.window_rule({ match = { class = [[^(([sS])team_app_3059177493)$]] }, workspace = "special:games" })
+
+-- --- Entry: Rise of the Tomb Raider™ Options ---
+hl.window_rule({ match = { initial_class = [[^(([rR])iseOfTheTombRaider)$]] }, workspace = "special:games" })
+hl.window_rule({ match = { initial_title = [[^(Rise of the Tomb Raider™ Options)$]] }, workspace = "special:games" })
+hl.window_rule({ match = { class = [[^(([rR])iseOfTheTombRaider)$]] }, workspace = "special:games" })
+
+-- --- Entry: Rise of the Tomb Raider ---
+hl.window_rule({ match = { initial_class = [[^(([sS])team_app_391220)$]] }, workspace = "special:games" })
+hl.window_rule({ match = { initial_title = [[^(Rise of the Tomb Raider)$]] }, workspace = "special:games" })
+hl.window_rule({ match = { class = [[^(([sS])team_app_391220)$]] }, workspace = "special:games" })
+
+-- --- Entry: Minecraft* 1.20.1 ---
+hl.window_rule({ match = { initial_class = [[^(([mM])inecraft* 1.20.1)$]] }, workspace = "special:games" })
+hl.window_rule({ match = { initial_title = [[^(Minecraft\* 1\.20\.1)$]] }, workspace = "special:games" })
+hl.window_rule({ match = { class = [[^(([mM])inecraft* 1.20.1)$]] }, workspace = "special:games" })
+
+-- --- Entry: BOMBANANA ---
+hl.window_rule({ match = { initial_class = [[^(([sS])team_app_4747510)$]] }, workspace = "special:games" })
+hl.window_rule({ match = { initial_title = [[^(BOMBANANA)$]] }, workspace = "special:games" })
+hl.window_rule({ match = { class = [[^(([sS])team_app_4747510)$]] }, workspace = "special:games" })
+
+-- --- Entry: Keep It Up! Demo   ---
+hl.window_rule({ match = { initial_class = [[^(([sS])team_app_4682480)$]] }, workspace = "special:games" })
+hl.window_rule({ match = { initial_title = [[^(Keep It Up! Demo  )$]] }, workspace = "special:games" })
+hl.window_rule({ match = { class = [[^(([sS])team_app_4682480)$]] }, workspace = "special:games" })
+
+-- --- Entry: Barony ---
+hl.window_rule({ match = { initial_class = [[^(([bB])arony.x86_64)$]] }, workspace = "special:games" })
+hl.window_rule({ match = { initial_title = [[^(Barony)$]] }, workspace = "special:games" })
+hl.window_rule({ match = { class = [[^(([bB])arony.x86_64)$]] }, workspace = "special:games" })
+
+-- --- Entry: Barony ---
+hl.window_rule({ match = { initial_class = [[^(([sS])team_app_371970)$]] }, workspace = "special:games" })
+hl.window_rule({ match = { initial_title = [[^(Barony)$]] }, workspace = "special:games" })
+hl.window_rule({ match = { class = [[^(([sS])team_app_371970)$]] }, workspace = "special:games" })
+
+-- --- Entry: FCT   ---
+hl.window_rule({ match = { initial_class = [[^(([sS])team_app_953880)$]] }, workspace = "special:games" })
+hl.window_rule({ match = { initial_title = [[^(FCT  )$]] }, workspace = "special:games" })
+hl.window_rule({ match = { class = [[^(([sS])team_app_953880)$]] }, workspace = "special:games" })
+
+-- --- Entry: Dead by Daylight ---
+hl.window_rule({ match = { initial_class = [[^(([sS])team_app_381210)$]] }, workspace = "special:games" })
+hl.window_rule({ match = { initial_title = [[^(Dead by Daylight)$]] }, workspace = "special:games" })
+hl.window_rule({ match = { class = [[^(([sS])team_app_381210)$]] }, workspace = "special:games" })
 

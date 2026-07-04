@@ -8,7 +8,7 @@ TEMP_FILE="/tmp/screenshot_$(date +%s).png"
 
 # 3. The Capture & Failsafe
 # grimblast returns 0 if successful, or aborts if you press Escape
-if grimblast --freeze save area "$TEMP_FILE"; then
+if grimblast --freeze -w 0.2 save area "$TEMP_FILE"; then
 
   # Open in swappy, and pipe the saved output to clipboard
   swappy -f "$TEMP_FILE" -o - | wl-copy
