@@ -13,6 +13,27 @@ local monitor_empty_ws = "~/.config/hypr/scripts/monitor_empty_ws.sh"
 local monitor_ws       = "~/.config/hypr/scripts/monitor_ws.sh"
 local close_special    = "~/.config/hypr/scripts/close_special.sh"
 
+
+
+local function smart_maximize()
+  local win = hl.get_active_window()
+  if not win then return end
+
+  -- Check if window is fullscreen/maximized
+  local is_maxed = win.fullscreen == true or (type(win.fullscreen) == "number" and win.fullscreen > 0)
+
+  if is_maxed then
+    hl.dispatch(hl.dsp.window.fullscreen({ mode = "maximized", action = "toggle" }))
+  elseif win.pinned then
+    hl.dispatch(hl.dsp.window.fullscreen({ mode = "maximized", action = "toggle" }))
+  elseif win.floating then
+    hl.dispatch(hl.dsp.window.float({ action = "toggle" }))
+  else
+    hl.dispatch(hl.dsp.window.fullscreen({ mode = "maximized", action = "toggle" }))
+  end
+end
+
+
 -- -----------------------------------------------------------------------------
 -- 1. Core App Launchers & System Actions
 -- -----------------------------------------------------------------------------
@@ -55,7 +76,7 @@ end
 
 -- Window Layout States
 hl.bind("SUPER + ALT + F", hl.dsp.window.float({ action = "toggle" }))
-hl.bind("SUPER + F", hl.dsp.window.fullscreen({ mode = "maximized", action = "toggle" }))
+hl.bind("SUPER + F", smart_maximize)
 hl.bind("SUPER + SHIFT + F", hl.dsp.window.fullscreen({ mode = "fullscreen", action = "toggle" }))
 
 -- Interactive Mouse Drag Binds
