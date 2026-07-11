@@ -1,154 +1,222 @@
-import Quickshell
-import Quickshell.Services.SystemTray
-import Quickshell.Hyprland
 import QtQuick
 import QtQuick.Layouts
+import QtCore 
+import Quickshell.Services.SystemTray as QsTray
 import "../../theme"
 
-RowLayout {
-    spacing: 8
-    id: systemTray
-
+MouseArea {
+    id: trayHoverContainer
+    
     property var parentWindow
 
-    // ─── EASY EXCLUSION LIST ─────────────────────────────────────────
-    // Just add any partial or full application IDs here to hide them!
-    property var ignoreList: [
-        "fcitx",
-        "kde connect indicator"
-    ]
-    // ─────────────────────────────────────────────────────────────────
+    implicitWidth: mainLayout.implicitWidth
+    implicitHeight: mainLayout.implicitHeight
+    
+    hoverEnabled: true
+    propagateComposedEvents: true
 
-    // First repeater: everything except ignored items and nm-applet
-    Repeater {
-        model: SystemTray.items
+    onExited: {
+        if (trayRoot.isExpanded) {
+            autoHideTimer.restart();
+        }
+    }
 
-        Item {
-            id: trayItem
+    onEntered: {
+        autoHideTimer.stop();
+    }
 
-            property string itemId: modelData.id.toLowerCase()
-            
-            // Dynamic check: loops through ignoreList to see if any match the current item ID
-            visible: !systemTray.ignoreList.some(ignored => itemId.includes(ignored)) && itemId !== "nm-applet"
+    RowLayout {
+        id: trayRoot
+        anchors.fill: parent
+        spacing: 6
 
-            Layout.preferredWidth: 20
-            Layout.preferredHeight: 20
+        property bool isExpanded: false
 
-            QsMenuAnchor {
-                id: trayMenu
-                menu: modelData.menu
-                anchor {
-                    window: parentWindow
-                    rect: Qt.rect(0, 0, 0, 0)
+        // Persistent storage for your pinned item IDs
+        Settings {
+            id: traySettings
+            category: "SystemTray"
+            property var pinnedList: ["network", "nm-applet", "volume", "wireplumber"]
+        }
+
+        function isPinned(appId) {
+            return traySettings.pinnedList.includes(appId);
+        }
+
+        function togglePin(appId) {
+            var current = Array.from(traySettings.pinnedList);
+            var index = current.indexOf(appId);
+            if (index > -1) {
+                current.splice(index, 1);
+            } else {
+                current.push(appId);
+            }
+            traySettings.pinnedList = current;
+        }
+
+        // ==========================================
+        // AUTOMATIC COLLAPSE TIMER (3 SECONDS)
+        // ==========================================
+        Timer {
+            id: autoHideTimer
+            interval: 3000
+            repeat: false
+            onTriggered: trayRoot.isExpanded = false
+        }
+
+        // --- INTERNAL CORE LAYOUT ---
+        RowLayout {
+            id: mainLayout
+            spacing: 6
+
+            // ==========================================
+            // 1. LEFT SIDE: UNPINNED / OVERFLOW ICONS
+            // ==========================================
+            Item {
+                id: overflowContainer
+                Layout.preferredWidth: trayRoot.isExpanded ? overflowTrayRow.implicitWidth : 0
+                Layout.fillHeight: true
+                clip: true 
+
+                Behavior on Layout.preferredWidth {
+                    NumberAnimation {
+                        duration: 250
+                        easing.type: Easing.InOutQuad
+                    }
                 }
-            }
 
-            property string cleanIcon: {
-                let rawSource = modelData.icon ? modelData.icon.toString() : "";
+                RowLayout {
+                    id: overflowTrayRow
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 6
 
-                // Spotify: force standard icon
-                if (itemId === "spotify-client") {
-                    return "file:///run/current-system/sw/share/icons/Papirus-Dark/32x32/apps/spotify.svg";
-                }
+                    Repeater {
+                        model: QsTray.SystemTray.items
+                        
+                        delegate: Rectangle {
+                            id: unpinnedIconWrapper
+                            property bool shouldShow: !trayRoot.isPinned(modelData.id)
+                            
+                            visible: shouldShow
+                            width: shouldShow ? 22 : 0
+                            height: shouldShow ? 22 : 0
+                            color: "transparent"
 
-                // Strip unsupported '?path=' params (Steam, etc.)
-                if (rawSource.includes("?path=")) {
-                    return rawSource.split("?")[0];
-                }
+                            Image {
+                                anchors.fill: parent
+                                source: modelData.icon
+                                fillMode: Image.PreserveAspectFit
+                            }
 
-                return rawSource;
-            }
-
-            Component.onCompleted: {
-                console.log("=== TRAY ITEM DETECTED ===");
-                console.log("ID:", itemId);
-                console.log("Raw Icon:", modelData.icon ? modelData.icon.toString() : "None");
-            }
-
-            Image {
-                anchors.fill: parent
-                source: cleanIcon
-                sourceSize: Qt.size(parent.width, parent.height)
-                fillMode: Image.PreserveAspectFit
-                smooth: true
-            }
-
-            MouseArea {
-                anchors.fill: parent
-                acceptedButtons: Qt.LeftButton | Qt.RightButton
-                onClicked: (mouse) => {
-                    if (mouse.button === Qt.LeftButton) {
-                        modelData.activate();
-                    } else if (mouse.button === Qt.RightButton) {
-                        var coords = trayItem.mapToItem(parentWindow.contentItem, 0, 0);
-                        var visualBottom = parentWindow.height + parentWindow.margins.bottom;
-                        trayMenu.anchor.rect = Qt.rect(coords.x, visualBottom, trayItem.width, 0);
-                        if (modelData.hasMenu) {
-                            trayMenu.open();
+                            MouseArea {
+                                id: unpinnedIconMouse
+                                anchors.fill: parent
+                                acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
+                                
+                                onClicked: (mouse) => {
+                                    if (mouse.button === Qt.MiddleButton) {
+                                        trayRoot.togglePin(modelData.id);
+                                    } else if (mouse.button === Qt.RightButton) {
+                                        if (modelData.hasMenu) {
+                                            var windowPos = mapToItem(trayHoverContainer.parentWindow.contentItem, mouse.x, mouse.y);
+                                            modelData.display(trayHoverContainer.parentWindow, windowPos.x, windowPos.y);
+                                        } else {
+                                            trayRoot.togglePin(modelData.id);
+                                        }
+                                    } else {
+                                        modelData.activate();
+                                    }
+                                }
+                            }
                         }
                     }
                 }
             }
-        }
-    }
 
-    // Second repeater: nm-applet always last
-    Repeater {
-        model: SystemTray.items
+            // ==========================================
+            // 2. CENTER: THE WINDOWS-STYLE FLIPPING ARROW
+            // ==========================================
+            Rectangle {
+                id: expandButton
+                width: 16
+                height: 24
+                color: "transparent"
+                
+                Text {
+                    id: arrowText
+                    anchors.centerIn: parent
+                    text: "◀"
+                    color: Theme.accent
+                    font.pixelSize: 12
+                    
+                    transform: Scale {
+                        id: flipTransform
+                        origin.x: arrowText.width / 2
+                        origin.y: arrowText.height / 2
+                        
+                        xScale: trayRoot.isExpanded ? -1 : 1 
+                        
+                        Behavior on xScale {
+                            NumberAnimation { duration: 220; easing.type: Easing.InOutQuad }
+                        }
+                    }
+                }
 
-        Item {
-            id: nmTrayItem
-
-            property string itemId: modelData.id.toLowerCase()
-            visible: itemId === "nm-applet"
-
-            Layout.preferredWidth: 20
-            Layout.preferredHeight: 20
-
-            QsMenuAnchor {
-                id: nmTrayMenu
-                menu: modelData.menu
-                anchor {
-                    window: parentWindow
-                    rect: Qt.rect(0, 0, 0, 0)
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: {
+                        trayRoot.isExpanded = !trayRoot.isExpanded;
+                        autoHideTimer.stop(); 
+                    }
                 }
             }
 
-            property string cleanIcon: {
-                let raw = modelData.icon ? modelData.icon.toString() : "";
-                let iconName = raw.replace("image://icon/", "");
-                let mapping = {
-                    "nm-signal-100": "network-wireless-signal-excellent",
-                    "nm-signal-75": "network-wireless-signal-good",
-                    "nm-signal-50": "network-wireless-signal-ok",
-                    "nm-signal-25": "network-wireless-signal-low",
-                    "nm-signal-00": "network-wireless-signal-none",
-                    "nm-no-connection": "network-wireless-offline"
-                };
-                let mapped = mapping[iconName] || "network-wireless-signal-excellent";
-                return "file:///run/current-system/sw/share/icons/Papirus-Dark/16x16/panel/" + mapped + ".svg";
-            }
+            // ==========================================
+            // 3. RIGHT SIDE: ALWAYS VISIBLE PINNED ICONS
+            // ==========================================
+            RowLayout {
+                id: pinnedTrayRow
+                spacing: 6
 
-            Image {
-                anchors.fill: parent
-                source: cleanIcon
-                sourceSize: Qt.size(parent.width, parent.height)
-                fillMode: Image.PreserveAspectFit
-                smooth: true
-            }
+                Repeater {
+                    model: QsTray.SystemTray.items
+                    
+                    delegate: Rectangle {
+                        id: pinnedIconWrapper
+                        property bool shouldShow: trayRoot.isPinned(modelData.id)
+                        
+                        visible: shouldShow
+                        width: shouldShow ? 22 : 0
+                        height: shouldShow ? 22 : 0
+                        color: "transparent"
 
-            MouseArea {
-                anchors.fill: parent
-                acceptedButtons: Qt.LeftButton | Qt.RightButton
-                onClicked: (mouse) => {
-                    if (mouse.button === Qt.LeftButton) {
-                        modelData.activate();
-                    } else if (mouse.button === Qt.RightButton) {
-                        var coords = nmTrayItem.mapToItem(parentWindow.contentItem, 0, 0);
-                        var visualBottom = parentWindow.height + parentWindow.margins.bottom;
-                        nmTrayMenu.anchor.rect = Qt.rect(coords.x, visualBottom, nmTrayItem.width, 0);
-                        if (modelData.hasMenu) {
-                            nmTrayMenu.open();
+                        Image {
+                            anchors.fill: parent
+                            source: modelData.icon
+                            fillMode: Image.PreserveAspectFit
+                        }
+
+                        MouseArea {
+                            id: pinnedIconMouse
+                            anchors.fill: parent
+                            acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
+                            
+                            onClicked: (mouse) => {
+                                if (mouse.button === Qt.MiddleButton) {
+                                    trayRoot.togglePin(modelData.id);
+                                } else if (mouse.button === Qt.RightButton) {
+                                    if (modelData.hasMenu) {
+                                        var windowPos = mapToItem(trayHoverContainer.parentWindow.contentItem, mouse.x, mouse.y);
+                                        modelData.display(trayHoverContainer.parentWindow, windowPos.x, windowPos.y);
+                                    } else {
+                                        trayRoot.togglePin(modelData.id);
+                                    }
+                                } else {
+                                    modelData.activate();
+                                }
+                            }
                         }
                     }
                 }
