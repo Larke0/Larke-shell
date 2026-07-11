@@ -89,11 +89,6 @@ hl.window_rule({ match = { initial_class = [[^(([sS])team_app_1091500)$]] }, wor
 hl.window_rule({ match = { initial_title = [[^(REDlauncher)$]] }, workspace = "special:games" })
 hl.window_rule({ match = { class = [[^(([sS])team_app_1091500)$]] }, workspace = "special:games" })
 
--- --- Entry: FINAL FANTASY VII REBIRTH ---
-hl.window_rule({ match = { initial_class = [[^(([sS])team_app_2909400)$]] }, workspace = "special:games" })
-hl.window_rule({ match = { initial_title = [[^(FINAL FANTASY VII REBIRTH)$]] }, workspace = "special:games" })
-hl.window_rule({ match = { class = [[^(([sS])team_app_2909400)$]] }, workspace = "special:games" })
-
 -- --- Entry: Starfield ---
 hl.window_rule({ match = { initial_class = [[^(([sS])team_app_1716740)$]] }, workspace = "special:games" })
 hl.window_rule({ match = { initial_title = [[^(Starfield)$]] }, workspace = "special:games" })
@@ -248,4 +243,9 @@ hl.window_rule({ match = { class = [[^(([sS])team_app_953880)$]] }, workspace = 
 hl.window_rule({ match = { initial_class = [[^(([sS])team_app_381210)$]] }, workspace = "special:games" })
 hl.window_rule({ match = { initial_title = [[^(Dead by Daylight)$]] }, workspace = "special:games" })
 hl.window_rule({ match = { class = [[^(([sS])team_app_381210)$]] }, workspace = "special:games" })
+
+-- --- Entry: FINAL FANTASY VII REBIRTH ---
+hl.window_rule({ match = { initial_class = [[^(([sS])team_app_2909400)$]] }, workspace = "special:games" })
+hl.window_rule({ match = { initial_title = [[^(FINAL FANTASY VII REBIRTH)$]] }, workspace = "special:games" })
+hl.window_rule({ match = { class = [[^(([sS])team_app_2909400)$]] }, workspace = "special:games" })
 

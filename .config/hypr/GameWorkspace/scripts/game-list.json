@@ -85,11 +85,6 @@
     "app_class": "steam_app_1091500"
   },
   {
-    "initial_class": "steam_app_2909400",
-    "initial_title": "FINAL FANTASY VII REBIRTH",
-    "app_class": "steam_app_2909400"
-  },
-  {
     "initial_class": "steam_app_1716740",
     "initial_title": "Starfield",
     "app_class": "steam_app_1716740"
@@ -243,5 +238,10 @@
     "initial_class": "steam_app_381210",
     "initial_title": "Dead by Daylight",
     "app_class": "steam_app_381210"
+  },
+  {
+    "initial_class": "steam_app_2909400",
+    "initial_title": "FINAL FANTASY VII REBIRTH",
+    "app_class": "steam_app_2909400"
   }
 ]
