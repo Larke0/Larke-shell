@@ -452,7 +452,7 @@ PanelWindow {
 
         states: State {
             name: "open"; when: rootMainMenu.isOpen
-            PropertyChanges { target: rootMainMenu; slideX: -cfg.notchDepth }
+            PropertyChanges { target: rootMainMenu; slideX: 0 }
         }
 
         transitions: [
