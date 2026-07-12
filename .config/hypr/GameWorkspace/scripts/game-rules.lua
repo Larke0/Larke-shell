@@ -249,3 +249,8 @@ hl.window_rule({ match = { initial_class = [[^(([sS])team_app_2909400)$]] }, wor
 hl.window_rule({ match = { initial_title = [[^(FINAL FANTASY VII REBIRTH)$]] }, workspace = "special:games" })
 hl.window_rule({ match = { class = [[^(([sS])team_app_2909400)$]] }, workspace = "special:games" })
 
+-- --- Entry: Overwatch ---
+hl.window_rule({ match = { initial_class = [[^(([oO])verwatch.exe)$]] }, workspace = "special:games" })
+hl.window_rule({ match = { initial_title = [[^(Overwatch)$]] }, workspace = "special:games" })
+hl.window_rule({ match = { class = [[^(([oO])verwatch.exe)$]] }, workspace = "special:games" })
+

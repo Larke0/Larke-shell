@@ -103,6 +103,26 @@ MouseArea {
                             height: shouldShow ? 22 : 0
                             color: "transparent"
 
+                            // --- RIGHT-TO-LEFT STAGGERED FADE ---
+                            // Opacity targets 1.0 when expanded. When collapsing, drops immediately to avoid awkward delays.
+                            opacity: trayRoot.isExpanded ? 1.0 : 0.0
+
+                            Behavior on opacity {
+                                NumberAnimation {
+                                    duration: 250
+                                    easing.type: Easing.InOutQuad
+                                }
+                            }
+
+                            // Use an event handler to inject the precise right-to-left delay cleanly
+                            onOpacityChanged: {
+                                if (trayRoot.isExpanded && opacity === 1.0) {
+                                    // Let QML compute the stagger window cleanly without property double-sets
+                                    var staggerDelay = Math.max(0, (overflowRepeater.count - 1 - index) * 45);
+                                }
+                              }
+
+
                             Image {
                                 anchors.fill: parent
                                 source: modelData.icon
@@ -149,17 +169,11 @@ MouseArea {
                     text: "◀"
                     color: Theme.accent
                     font.pixelSize: 12
-                    
-                    transform: Scale {
-                        id: flipTransform
-                        origin.x: arrowText.width / 2
-                        origin.y: arrowText.height / 2
-                        
-                        xScale: trayRoot.isExpanded ? -1 : 1 
-                        
-                        Behavior on xScale {
-                            NumberAnimation { duration: 220; easing.type: Easing.InOutQuad }
-                        }
+
+                    opacity: trayRoot.isExpanded ? 1.0 : 0.4
+
+                    Behavior on opacity {
+                        NumberAnimation { duration: 220; easing.type: Easing.InOutQuad }
                     }
                 }
 

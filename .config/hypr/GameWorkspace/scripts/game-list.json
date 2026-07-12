@@ -243,5 +243,10 @@
     "initial_class": "steam_app_2909400",
     "initial_title": "FINAL FANTASY VII REBIRTH",
     "app_class": "steam_app_2909400"
+  },
+  {
+    "initial_class": "overwatch.exe",
+    "initial_title": "Overwatch",
+    "app_class": "overwatch.exe"
   }
 ]
