@@ -184,7 +184,7 @@ MouseArea {
                     color: Theme.accent
                     font.pixelSize: 12
 
-                    opacity: trayRoot.isExpanded ? 1.0 : 0.4
+                    opacity: trayRoot.isExpanded ? 1.0 : 0.25
 
                     Behavior on opacity {
                         NumberAnimation { duration: 220; easing.type: Easing.InOutQuad }
