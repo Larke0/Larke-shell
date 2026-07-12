@@ -78,6 +78,7 @@ MouseArea {
                 Layout.fillHeight: true
                 clip: true 
 
+                // EQUALIZED SLIDING: 250ms for both opening and closing!
                 Behavior on Layout.preferredWidth {
                     NumberAnimation {
                         duration: 250
@@ -92,6 +93,7 @@ MouseArea {
                     spacing: 6
 
                     Repeater {
+                        id: overflowRepeater
                         model: QsTray.SystemTray.items
                         
                         delegate: Rectangle {
@@ -103,25 +105,37 @@ MouseArea {
                             height: shouldShow ? 22 : 0
                             color: "transparent"
 
-                            // --- RIGHT-TO-LEFT STAGGERED FADE ---
-                            // Opacity targets 1.0 when expanded. When collapsing, drops immediately to avoid awkward delays.
-                            opacity: trayRoot.isExpanded ? 1.0 : 0.0
+                            property bool isFadedIn: false
+                            property bool expandedState: trayRoot.isExpanded
+                            
+                            onExpandedStateChanged: {
+                                staggerTimer.restart(); 
+                            }
 
-                            Behavior on opacity {
-                                NumberAnimation {
-                                    duration: 250
-                                    easing.type: Easing.InOutQuad
+                            Timer {
+                                id: staggerTimer
+                                // THE MIRROR MATH:
+                                // We take 150ms and divide it by the number of icons. 
+                                // This ensures all staggers fit perfectly inside the 250ms slide, no matter how many icons you have!
+                                property real step: 150 / Math.max(1, overflowRepeater.count)
+                                interval: Math.max(1, expandedState 
+                                    ? (index * step) 
+                                    : ((overflowRepeater.count - 1 - index) * step))
+                                repeat: false
+                                onTriggered: {
+                                    unpinnedIconWrapper.isFadedIn = unpinnedIconWrapper.expandedState;
                                 }
                             }
 
-                            // Use an event handler to inject the precise right-to-left delay cleanly
-                            onOpacityChanged: {
-                                if (trayRoot.isExpanded && opacity === 1.0) {
-                                    // Let QML compute the stagger window cleanly without property double-sets
-                                    var staggerDelay = Math.max(0, (overflowRepeater.count - 1 - index) * 45);
-                                }
-                              }
+                            opacity: isFadedIn ? 1.0 : 0.0
 
+                            Behavior on opacity {
+                                NumberAnimation { 
+                                    // 100ms fade + 150ms total stagger time = exactly 250ms (matches the slide duration)
+                                    duration: 100 
+                                    easing.type: Easing.InOutQuad 
+                                }
+                            }
 
                             Image {
                                 anchors.fill: parent
@@ -152,7 +166,7 @@ MouseArea {
                         }
                     }
                 }
-            }
+              }
 
             // ==========================================
             // 2. CENTER: THE WINDOWS-STYLE FLIPPING ARROW
