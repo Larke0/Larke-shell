@@ -5,6 +5,7 @@ import Quickshell
 import Quickshell.Wayland
 import Quickshell.Hyprland
 import Quickshell.Io
+import QtCore
 import "../../theme"
 
 // =============================================================================
@@ -20,7 +21,7 @@ PanelWindow {
     QtObject {
         id: cfg
 
-        readonly property int panelWidth:   330
+        readonly property int panelWidth:   345
         readonly property int panelHeight:  1050
         readonly property int notchDepth:   20
         readonly property int notchRadius:  10
@@ -37,7 +38,7 @@ PanelWindow {
         readonly property int dividerHeight: 5
         readonly property int dividerRadius: 10
 
-        readonly property int sysBtnWidth:    80
+        readonly property int sysBtnWidth:   68 
         readonly property int sysBtnHeight:   50
         readonly property int sysBtnRadius:   100
         readonly property int sysBtnFontSize: 40
@@ -58,13 +59,20 @@ PanelWindow {
         readonly property int selectorIconSize: 26
         readonly property int selectorAnimMs:   300
 
-        readonly property int sysRowSpacing:    15
+        readonly property int sysRowSpacing:    8
         readonly property int toggleRowSpacing: 10
 
         readonly property int gifSize:       250
         readonly property int gifLeftMargin: 27
 
         readonly property string nerdFont: "JetBrainsMono Nerd Font Propo"
+      }
+
+    // Cache to hold the last known values
+    Settings {
+        id: menuCache
+        category: "Display"
+        property int lastBrightness: 50
     }
 
 
@@ -161,7 +169,10 @@ PanelWindow {
         stdout: StdioCollector {
             onStreamFinished: {
                 let val = parseInt(this.text.trim())
-                if (!isNaN(val)) brightnessSlider.value = val
+                if (!isNaN(val)) {
+                    brightnessSlider.value = val
+                    menuCache.lastBrightness = val // <-- Save it to cache
+                }
             }
         }
     }
@@ -400,16 +411,32 @@ PanelWindow {
                         x: fill.width - 8
                     }
                     MouseArea {
-                        anchors.fill: parent
+                        // Match the exact height of the thumb circle
+                        height: 18
+                        anchors.verticalCenter: parent.verticalCenter
+                        
+                        // Extend 8px past the track on both sides 
+                        // so the circle is fully clickable at 0% and 100%
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.leftMargin: -8
+                        anchors.rightMargin: -8
+
                         function updateValue(mx) {
-                            let ratio = Math.max(0, Math.min(1, mx / track.width))
+                            // Compensate for the -8px shift so the percentage math 
+                            // perfectly aligns with the visual 6px track
+                            let trackX = mx - 8
+                            let ratio = Math.max(0, Math.min(1, trackX / track.width))
                             let nv = Math.round(sliderRoot.minValue + ratio * (sliderRoot.maxValue - sliderRoot.minValue))
-                            if (sliderRoot.value !== nv) { sliderRoot.value = nv; sliderRoot.valueChangedByUser(nv) }
+                            if (sliderRoot.value !== nv) { 
+                                sliderRoot.value = nv 
+                                sliderRoot.valueChangedByUser(nv) 
+                            }
                         }
+                        
                         onPositionChanged: (mouse) => { if (pressed) updateValue(mouse.x) }
                         onClicked: (mouse) => updateValue(mouse.x)
-                    }
-                }
+                    }                }
                 Text {
                     text: sliderRoot.value + "%"; color: "white"; font.bold: true; font.pixelSize: 14
                     Layout.minimumWidth: 40; horizontalAlignment: Text.AlignRight
@@ -523,6 +550,7 @@ PanelWindow {
                 SysButton { name: "\udb81\udc25"; cmd: "systemctl poweroff" }
                 SysButton { name: "\udb81\udf09"; cmd: "systemctl reboot" }
                 SysButton { name: "\udb80\udf3e"; fontSize: cfg.lockBtnFontSize; cmd: "sleep 0.3 && pidof hyprlock || hyprlock" }
+                SysButton { name: "\uf236"; fontSize: 28; cmd: "systemctl suspend" }
             }
 
             Rectangle {
@@ -553,7 +581,9 @@ PanelWindow {
                 id: brightnessSlider
                 icon: "\udb80\udcdd"
                 Layout.fillWidth: true
+                value: menuCache.lastBrightness
                 onValueChangedByUser: (newValue) => {
+                    menuCache.lastBrightness = newValue
                     brightnessSetter.command = ["sh", "-c",
                         "ddcutil --async --display " + rootMainMenu.currentDdcDisplay + " setvcp 10 " + newValue]
                     brightnessSetter.running = true

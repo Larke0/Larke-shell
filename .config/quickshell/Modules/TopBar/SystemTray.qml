@@ -69,8 +69,43 @@ MouseArea {
             id: mainLayout
             spacing: 6
 
+
             // ==========================================
-            // 1. LEFT SIDE: UNPINNED / OVERFLOW ICONS
+            // EXPAND BUTTON
+            // ==========================================
+            Rectangle {
+                id: expandButton
+                width: 16
+                height: 24
+                color: "transparent"
+                
+                Text {
+                    id: arrowText
+                    anchors.centerIn: parent
+                    text: "◀"
+                    color: Theme.accent
+                    font.pixelSize: 12
+
+                    opacity: trayRoot.isExpanded ? 1.0 : 0.25
+
+                    Behavior on opacity {
+                        NumberAnimation { duration: 220; easing.type: Easing.InOutQuad }
+                    }
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: {
+                        trayRoot.isExpanded = !trayRoot.isExpanded;
+                        autoHideTimer.stop(); 
+                    }
+                }
+            }
+
+
+            // ==========================================
+            // UNPINNED / OVERFLOW ICONS
             // ==========================================
             Item {
                 id: overflowContainer
@@ -168,41 +203,9 @@ MouseArea {
                 }
               }
 
+            
             // ==========================================
-            // 2. CENTER: THE WINDOWS-STYLE FLIPPING ARROW
-            // ==========================================
-            Rectangle {
-                id: expandButton
-                width: 16
-                height: 24
-                color: "transparent"
-                
-                Text {
-                    id: arrowText
-                    anchors.centerIn: parent
-                    text: "◀"
-                    color: Theme.accent
-                    font.pixelSize: 12
-
-                    opacity: trayRoot.isExpanded ? 1.0 : 0.25
-
-                    Behavior on opacity {
-                        NumberAnimation { duration: 220; easing.type: Easing.InOutQuad }
-                    }
-                }
-
-                MouseArea {
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: {
-                        trayRoot.isExpanded = !trayRoot.isExpanded;
-                        autoHideTimer.stop(); 
-                    }
-                }
-            }
-
-            // ==========================================
-            // 3. RIGHT SIDE: ALWAYS VISIBLE PINNED ICONS
+            // ALWAYS VISIBLE PINNED ICONS
             // ==========================================
             RowLayout {
                 id: pinnedTrayRow
