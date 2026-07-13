@@ -67,7 +67,7 @@ MouseArea {
         // --- INTERNAL CORE LAYOUT ---
         RowLayout {
             id: mainLayout
-            spacing: 6
+            spacing:  trayRoot.isExpanded ? 6 : 3
 
 
             // ==========================================
