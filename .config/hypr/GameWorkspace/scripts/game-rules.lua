@@ -254,3 +254,8 @@ hl.window_rule({ match = { initial_class = [[^(([oO])verwatch.exe)$]] }, workspa
 hl.window_rule({ match = { initial_title = [[^(Overwatch)$]] }, workspace = "special:games" })
 hl.window_rule({ match = { class = [[^(([oO])verwatch.exe)$]] }, workspace = "special:games" })
 
+-- --- Entry: We Were Here Together ---
+hl.window_rule({ match = { initial_class = [[^(([sS])team_app_865360)$]] }, workspace = "special:games" })
+hl.window_rule({ match = { initial_title = [[^(We Were Here Together)$]] }, workspace = "special:games" })
+hl.window_rule({ match = { class = [[^(([sS])team_app_865360)$]] }, workspace = "special:games" })
+

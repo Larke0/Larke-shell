@@ -248,5 +248,10 @@
     "initial_class": "overwatch.exe",
     "initial_title": "Overwatch",
     "app_class": "overwatch.exe"
+  },
+  {
+    "initial_class": "steam_app_865360",
+    "initial_title": "We Were Here Together",
+    "app_class": "steam_app_865360"
   }
 ]
