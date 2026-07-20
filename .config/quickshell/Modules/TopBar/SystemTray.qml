@@ -55,6 +55,32 @@ MouseArea {
         }
 
         // ==========================================
+        // CUSTOM ICON MAPPING (Restored)
+        // ==========================================
+        function getIcon(modelData) {
+            let rawSource = modelData.icon ? modelData.icon.toString() : "";
+            let itemId = modelData.id ? modelData.id.toLowerCase() : "";
+
+            // Apply custom mapping ONLY for nm-applet
+            if (itemId === "nm-applet") {
+                let iconName = rawSource.replace("image://icon/", "");
+                let mapping = {
+                    "nm-signal-100": "network-wireless-signal-excellent",
+                    "nm-signal-75": "network-wireless-signal-good",
+                    "nm-signal-50": "network-wireless-signal-ok",
+                    "nm-signal-25": "network-wireless-signal-low",
+                    "nm-signal-00": "network-wireless-signal-none",
+                    "nm-no-connection": "network-wireless-offline"
+                };
+                let mapped = mapping[iconName] || "network-wireless-signal-excellent";
+                return "file:///run/current-system/sw/share/icons/Papirus-Dark/16x16/panel/" + mapped + ".svg";
+            }
+
+            // Return the raw system icon for everything else
+            return rawSource;
+        }
+
+        // ==========================================
         // AUTOMATIC COLLAPSE TIMER (3 SECONDS)
         // ==========================================
         Timer {
@@ -174,7 +200,7 @@ MouseArea {
 
                             Image {
                                 anchors.fill: parent
-                                source: modelData.icon
+                                source: trayRoot.getIcon(modelData) // <-- FIXED
                                 fillMode: Image.PreserveAspectFit
                             }
 
@@ -225,7 +251,7 @@ MouseArea {
 
                         Image {
                             anchors.fill: parent
-                            source: modelData.icon
+                            source: trayRoot.getIcon(modelData) // <-- FIXED
                             fillMode: Image.PreserveAspectFit
                         }
 
