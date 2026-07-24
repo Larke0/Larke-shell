@@ -253,5 +253,25 @@
     "initial_class": "steam_app_865360",
     "initial_title": "We Were Here Together",
     "app_class": "steam_app_865360"
+  },
+  {
+    "initial_class": "paralives.exe",
+    "initial_title": "Paralives",
+    "app_class": "paralives.exe"
+  },
+  {
+    "initial_class": "deadbydaylight-win64-shipping.exe",
+    "initial_title": "DeadByDaylight  ",
+    "app_class": "deadbydaylight-win64-shipping.exe"
+  },
+  {
+    "initial_class": "steam",
+    "initial_title": "Steam",
+    "app_class": "steam"
+  },
+  {
+    "initial_class": "repo.exe",
+    "initial_title": "REPO",
+    "app_class": "repo.exe"
   }
 ]

@@ -259,3 +259,23 @@ hl.window_rule({ match = { initial_class = [[^(([sS])team_app_865360)$]] }, work
 hl.window_rule({ match = { initial_title = [[^(We Were Here Together)$]] }, workspace = "special:games" })
 hl.window_rule({ match = { class = [[^(([sS])team_app_865360)$]] }, workspace = "special:games" })
 
+-- --- Entry: Paralives ---
+hl.window_rule({ match = { initial_class = [[^(([pP])aralives.exe)$]] }, workspace = "special:games" })
+hl.window_rule({ match = { initial_title = [[^(Paralives)$]] }, workspace = "special:games" })
+hl.window_rule({ match = { class = [[^(([pP])aralives.exe)$]] }, workspace = "special:games" })
+
+-- --- Entry: DeadByDaylight   ---
+hl.window_rule({ match = { initial_class = [[^(([dD])eadbydaylight-win64-shipping.exe)$]] }, workspace = "special:games" })
+hl.window_rule({ match = { initial_title = [[^(DeadByDaylight  )$]] }, workspace = "special:games" })
+hl.window_rule({ match = { class = [[^(([dD])eadbydaylight-win64-shipping.exe)$]] }, workspace = "special:games" })
+
+-- --- Entry: Steam ---
+hl.window_rule({ match = { initial_class = [[^(([sS])team)$]] }, workspace = "special:games" })
+hl.window_rule({ match = { initial_title = [[^(Steam)$]] }, workspace = "special:games" })
+hl.window_rule({ match = { class = [[^(([sS])team)$]] }, workspace = "special:games" })
+
+-- --- Entry: REPO ---
+hl.window_rule({ match = { initial_class = [[^(([rR])epo.exe)$]] }, workspace = "special:games" })
+hl.window_rule({ match = { initial_title = [[^(REPO)$]] }, workspace = "special:games" })
+hl.window_rule({ match = { class = [[^(([rR])epo.exe)$]] }, workspace = "special:games" })
+
