@@ -269,11 +269,6 @@ hl.window_rule({ match = { initial_class = [[^(([dD])eadbydaylight-win64-shippin
 hl.window_rule({ match = { initial_title = [[^(DeadByDaylight  )$]] }, workspace = "special:games" })
 hl.window_rule({ match = { class = [[^(([dD])eadbydaylight-win64-shipping.exe)$]] }, workspace = "special:games" })
 
--- --- Entry: Steam ---
-hl.window_rule({ match = { initial_class = [[^(([sS])team)$]] }, workspace = "special:games" })
-hl.window_rule({ match = { initial_title = [[^(Steam)$]] }, workspace = "special:games" })
-hl.window_rule({ match = { class = [[^(([sS])team)$]] }, workspace = "special:games" })
-
 -- --- Entry: REPO ---
 hl.window_rule({ match = { initial_class = [[^(([rR])epo.exe)$]] }, workspace = "special:games" })
 hl.window_rule({ match = { initial_title = [[^(REPO)$]] }, workspace = "special:games" })

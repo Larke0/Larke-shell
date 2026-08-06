@@ -24,6 +24,5 @@ require("hyprland/specialWorkspaces")
 -- 6. Window Event Mitigations & Screencopy Capability Matrix
 require("hyprland/permissions")
 
-
 -- 7. Load Gaming Environment Workspace Sub-Module
-require("GameWorkspace")
+-- require("GameWorkspace")

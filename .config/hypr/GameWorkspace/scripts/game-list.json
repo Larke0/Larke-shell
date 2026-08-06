@@ -265,11 +265,6 @@
     "app_class": "deadbydaylight-win64-shipping.exe"
   },
   {
-    "initial_class": "steam",
-    "initial_title": "Steam",
-    "app_class": "steam"
-  },
-  {
     "initial_class": "repo.exe",
     "initial_title": "REPO",
     "app_class": "repo.exe"
