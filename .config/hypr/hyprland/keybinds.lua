@@ -6,7 +6,8 @@
 -- -----------------------------------------------------------------------------
 local terminal = "kitty"
 local fileManager = "nautilus --new-window"
-local menu = "rofi -show combi -modes combi -combi-modes 'drun,calc'"
+--local menu = "rofi -show combi -modes combi -combi-modes 'drun,calc'"
+local menu = "caelestia shell drawers toggle launcher"
 local browser = "helium"
 -- local toggle_scroll = "~/.config/hypr/scripts/toggle_scroll.sh"
 local monitor_empty_ws = "~/.config/hypr/scripts/monitor_empty_ws.sh"
@@ -55,7 +56,8 @@ hl.bind("SUPER + W", hl.dsp.exec_cmd(browser))
 hl.bind("SUPER + E", hl.dsp.exec_cmd(fileManager))
 hl.bind("ALT + TAB", hl.dsp.window.cycle_next())
 hl.bind("CTRL + SHIFT + Escape", hl.dsp.exec_cmd("kitty --class btop -e btop"))
-hl.bind("SUPER + L", hl.dsp.exec_cmd("hyprlock"))
+--hl.bind("SUPER + L", hl.dsp.exec_cmd("hyprlock"))
+hl.bind("SUPER + L", hl.dsp.exec_cmd("caelestia shell lock lock"))
 hl.bind("SUPER + Q", hl.dsp.exec_cmd("~/.config/hypr/GameWorkspace/scripts/close-window.sh"))
 hl.bind("SUPER + SHIFT + Q", hl.dsp.exec_cmd("kill -9 $(hyprctl activewindow -j | jq .pid)"))
 
