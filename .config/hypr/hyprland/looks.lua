@@ -5,43 +5,43 @@
 -- 1. Core Window Structures, Shadows, and Gaps
 -- -----------------------------------------------------------------------------
 hl.config({
-  general = {
-    gaps_in = 3,
-    gaps_out = 8,
-    border_size = 2,
-    col = {
-      -- Type-safe multi-color gradient table
-      active_border = { colors = { "rgba(33ccffee)", "rgba(00ff99ee)" }, angle = 45 },
-      inactive_border = "rgba(595959aa)"
-    },
-    resize_on_border = false,
-    allow_tearing = false,
-    layout = "dwindle"
-  },
+	general = {
+		gaps_in = 3,
+		gaps_out = 8,
+		border_size = 2,
+		col = {
+			-- Type-safe multi-color gradient table
+			active_border = { colors = { "rgba(33ccffee)", "rgba(00ff99ee)" }, angle = 45 },
+			inactive_border = "rgba(595959aa)",
+		},
+		resize_on_border = false,
+		allow_tearing = false,
+		layout = "dwindle",
+	},
 
-  decoration = {
-    rounding = 10,
-    rounding_power = 2,
-    shadow = {
-      enabled = true,
-      range = 15,
-      render_power = 5,
-      color = "rgba(1a1a1aee)"
-    }
-  },
+	decoration = {
+		rounding = 20,
+		rounding_power = 2,
+		shadow = {
+			enabled = true,
+			range = 15,
+			render_power = 5,
+			color = "rgba(1a1a1aee)",
+		},
+	},
 
-  dwindle = {
-    preserve_split = true
-  },
+	dwindle = {
+		preserve_split = true,
+	},
 
-  master = {
-    new_status = "master"
-  },
+	master = {
+		new_status = "master",
+	},
 
-  misc = {
-    force_default_wallpaper = 0,
-    disable_hyprland_logo = true
-  }
+	misc = {
+		force_default_wallpaper = 0,
+		disable_hyprland_logo = true,
+	},
 })
 
 -- -----------------------------------------------------------------------------
@@ -81,11 +81,10 @@ hl.animation({ leaf = "fadeDpms", enabled = true, speed = 4, bezier = "smoothIn"
 -- Workspaces (Using the specific 'spring' key)
 hl.animation({ leaf = "workspaces", enabled = true, speed = 5, spring = "spring_workspace", style = "slide" })
 hl.animation({
-  leaf = "specialWorkspace",
-  enabled = true,
-  speed = 5,
-  spring = "spring_special",
-  style =
-  "slidefadevert 30%"
+	leaf = "specialWorkspace",
+	enabled = true,
+	speed = 5,
+	spring = "spring_special",
+	style = "slidefadevert 30%",
 })
 hl.animation({ leaf = "monitorAdded", enabled = true, speed = 5, bezier = "smoothIn" })
