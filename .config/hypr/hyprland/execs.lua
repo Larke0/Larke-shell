@@ -7,7 +7,7 @@ hl.on("hyprland.start", function()
 	hl.exec_cmd("sleep 0.5 && hyprlock")
 
 	-- Background Utilities
-	hl.exec_cmd("hypridle")
+	--hl.exec_cmd("hypridle")
 	hl.exec_cmd("awww-daemon")
 	hl.exec_cmd("awww restore")
 	--  hl.exec_cmd("quickshell")
