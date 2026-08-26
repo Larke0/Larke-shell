@@ -79,7 +79,7 @@ hl.animation({ leaf = "fadeDim", enabled = true, speed = 4, bezier = "smoothIn" 
 hl.animation({ leaf = "fadeDpms", enabled = true, speed = 4, bezier = "smoothIn" })
 
 -- Workspaces (Using the specific 'spring' key)
-hl.animation({ leaf = "workspaces", enabled = true, speed = 5, spring = "spring_workspace", style = "slide" })
+hl.animation({ leaf = "workspaces", enabled = true, speed = 10, spring = "spring_workspace", style = "slidevert" })
 hl.animation({
 	leaf = "specialWorkspace",
 	enabled = true,

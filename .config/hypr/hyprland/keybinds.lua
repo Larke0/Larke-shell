@@ -119,8 +119,8 @@ hl.bind("SUPER + A", hl.dsp.exec_cmd(close_special))
 -- 4. Monitor Workspace Navigation & Mouse-Wheel Hooks
 -- -----------------------------------------------------------------------------
 local wheel_nav = {
-	down = { val = "-1", key = "left" },
-	up = { val = "+1", key = "right" },
+	down = { val = "-1", key = "up" },
+	up = { val = "+1", key = "down" },
 }
 
 for dir, nav in pairs(wheel_nav) do
