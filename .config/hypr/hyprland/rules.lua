@@ -2,9 +2,9 @@
 
 -- Base Safety Rules
 hl.window_rule({
-  name = "suppress-maximize-events",
-  match = { class = ".*" },
-  suppress_event = "maximize"
+	name = "suppress-maximize-events",
+	match = { class = ".*" },
+	suppress_event = "maximize",
 })
 
 -- Performance Tiling Overrides
@@ -16,17 +16,17 @@ hl.window_rule({ match = { initial_class = "^(Quartus)$", initial_title = "^(Qua
 
 -- Application Layout Modifiers
 hl.window_rule({
-  match = { title = "^(Picture-in-Picture)$" },
-  float = true,
-  pin = true,
-  size = { 772, 432 }
+	match = { title = "^(Picture-in-Picture)$" },
+	float = true,
+	pin = true,
+	size = { 772, 432 },
 })
 
 hl.window_rule({
-  match = { class = "^(hyprland-share-picker)$" },
-  pin = true,
-  stay_focused = true,
-  focus_on_activate = true
+	match = { class = "^(hyprland-share-picker)$" },
+	pin = true,
+	stay_focused = true,
+	focus_on_activate = true,
 })
 
 -- Media & Gaming Focus Performance Rules
@@ -38,3 +38,6 @@ hl.window_rule({ match = { title = "^(Vtube Studio)", class = "^(steam_app_13258
 hl.window_rule({ match = { class = ".*" }, no_blur = true })
 hl.window_rule({ match = { class = "^(kitty)$" }, no_blur = false })
 hl.window_rule({ match = { class = "^(btop)$" }, no_blur = false })
+
+hl.window_rule({ match = { class = "^(steam)$" }, float = true })
+hl.window_rule({ match = { class = "^(steam)$", initial_title = "^(Steam)$" }, float = false })

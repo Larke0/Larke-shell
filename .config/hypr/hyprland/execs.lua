@@ -12,10 +12,12 @@ hl.on("hyprland.start", function()
 	hl.exec_cmd("awww restore")
 	--  hl.exec_cmd("quickshell")
 
-	hl.exec_cmd("systemd-run --user --slice=app.slice --unit=caelestia-shell-daemon caelestia shell")
+	-- Desktop Application Boot Stack
+	local lock_wait = "~/.config/hypr/scripts/lock-wait.sh"
+	hl.exec_cmd(lock_wait .. " && systemd-run --user --slice=app.slice --unit=caelestia-shell-daemon caelestia shell")
 	hl.exec_cmd("wl-paste --type text --watch cliphist store")
 	hl.exec_cmd("wl-paste --type image --watch cliphist store")
-	hl.exec_cmd("fcitx5")
+	--hl.exec_cmd("fcitx5")
 
 	-- Theming and State Sync
 	hl.exec_cmd("sleep 1 && ~/.config/quickshell/scripts/set-theme.sh")

@@ -64,7 +64,7 @@ hl.bind("SUPER + SHIFT + Q", hl.dsp.exec_cmd("kill -9 $(hyprctl activewindow -j 
 -- Clipboard & Screenshots
 hl.bind("SUPER + V", hl.dsp.exec_cmd("cliphist list | rofi -dmenu | cliphist decode | wl-copy"))
 hl.bind("SUPER + SHIFT + S", hl.dsp.exec_cmd("~/.config/hypr/scripts/screenshot.sh"))
-hl.bind("Print", hl.dsp.exec_cmd("caelestia screenshot"))
+hl.bind("", hl.dsp.exec_cmd("caelestia screenshot"))
 
 -- Dynamic Application Menu (Triggers on left Super key release)
 hl.bind("SUPER + SUPER_L", launch_menu, { release = true })
