@@ -12,7 +12,7 @@ hl.config({
 		col = {
 			-- Type-safe multi-color gradient table
 			active_border = { colors = { "rgba(33ccffee)", "rgba(00ff99ee)" }, angle = 45 },
-			inactive_border = "rgba(595959aa)",
+			inactive_border = "rgba(00000000)",
 		},
 		resize_on_border = false,
 		allow_tearing = false,
@@ -23,7 +23,7 @@ hl.config({
 		rounding = 20,
 		rounding_power = 2,
 		shadow = {
-			enabled = true,
+			enabled = false,
 			range = 15,
 			render_power = 5,
 			color = "rgba(1a1a1aee)",
