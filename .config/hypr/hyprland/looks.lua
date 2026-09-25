@@ -11,7 +11,8 @@ hl.config({
 		border_size = 2,
 		col = {
 			-- Type-safe multi-color gradient table
-			active_border = { colors = { "rgba(33ccffee)", "rgba(00ff99ee)" }, angle = 45 },
+			--active_border = { colors = { "rgba(33ccffee)", "rgba(00ff99ee)" }, angle = 45 },
+			active_border = { colors = { "rgba(00000000)", "rgba(00000000)" }, angle = 45 },
 			inactive_border = "rgba(00000000)",
 		},
 		resize_on_border = false,
