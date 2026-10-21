@@ -29,4 +29,7 @@ hl.on("hyprland.start", function()
 
 	-- Local Plugin Engine Reload
 	hl.exec_cmd("sleep 3 && hyprpm reload -n")
+
+	-- GPU screen recorder daemon
+	hl.exec_cmd("gsr-ui launch-daemon")
 end)

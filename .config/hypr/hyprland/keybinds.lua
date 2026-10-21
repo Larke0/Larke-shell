@@ -73,6 +73,27 @@ hl.bind("SUPER + SUPER_L", launch_menu, { release = true })
 hl.bind("SUPER_L", disable_scroll, { non_blocking = true, locked = true, transparent = true })
 hl.bind("SUPER + SUPER_L", enable_scroll, { release = true, non_blocking = true, locked = true, transparent = true })
 
+hl.bind("SUPER + G", hl.dsp.exec_cmd("gsr-ui-cli toggle-show"))
+-- Replay Controls
+hl.bind("SHIFT + ALT + F10", hl.dsp.exec_cmd("gsr-ui-cli toggle-replay"))
+hl.bind("ALT + F10", hl.dsp.exec_cmd("gsr-ui-cli replay-save"))
+hl.bind("ALT + F11", hl.dsp.exec_cmd("gsr-ui-cli replay-save-1-min"))
+hl.bind("ALT + F12", hl.dsp.exec_cmd("gsr-ui-cli replay-save-10-min"))
+
+-- Recording Controls
+hl.bind("ALT + F9", hl.dsp.exec_cmd("gsr-ui-cli toggle-record"))
+hl.bind("ALT + F7", hl.dsp.exec_cmd("gsr-ui-cli toggle-pause"))
+hl.bind("CTRL + F9", hl.dsp.exec_cmd("gsr-ui-cli toggle-record-region"))
+hl.bind("SHIFT + F9", hl.dsp.exec_cmd("gsr-ui-cli toggle-record-window"))
+
+-- Streaming
+hl.bind("ALT + F8", hl.dsp.exec_cmd("gsr-ui-cli toggle-stream"))
+
+-- Screenshot Controls
+hl.bind("Print", hl.dsp.exec_cmd("gsr-ui-cli take-screenshot"))
+hl.bind("CTRL + Print", hl.dsp.exec_cmd("gsr-ui-cli take-screenshot-region"))
+hl.bind("SHIFT + Print", hl.dsp.exec_cmd("gsr-ui-cli take-screenshot-window"))
+
 -- -----------------------------------------------------------------------------
 -- 2. Directional Matrix (Focus, Move, Resize)
 -- -----------------------------------------------------------------------------
